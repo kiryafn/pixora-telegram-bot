@@ -1,4 +1,6 @@
-from .config import Settings, settings
+from .config import Settings
+
+settings = Settings()
 
 __all__ = (
     "Settings",

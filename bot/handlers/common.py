@@ -1,7 +1,6 @@
 from aiogram import Router
-from aiogram.filters import Command
-#from aiogram.filters import Text
-from aiogram.types import Message
+from aiogram.filters import Command, BaseFilter
+from aiogram.types import Message, FSInputFile
 
 from bot.keyboards.lang_keyboard import get_main_reply_keyboard
 from data.models.user import User
@@ -28,12 +27,12 @@ async def cmd_start(message: Message) -> None:
     keyboard = await get_main_reply_keyboard(lang)
 
     await message.answer(text, reply_markup=keyboard)
+
 @router.message(Command("help"))
 async def cmd_help(message: Message) -> None:
     text = await get_text(await user_repository.get_user_lang(message.from_user.id), "help")
     await message.answer(text)
 
-#@router.message(Text("🤡"))
 @router.message(F.text == "🤡")
 async def clown_reply(message: Message) -> None:
     await message.answer("Сам клоун")

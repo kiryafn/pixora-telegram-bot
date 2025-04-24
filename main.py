@@ -1,12 +1,10 @@
 import asyncio
-from time import sleep
-
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.configuration import settings
 from bot.core.middleware import LoggingMiddleware
 from bot.handlers import register_handlers
-from bot.core.logger import logger  # вот он, твой централизованный логгер
+from bot.core.logger import logger
 
 async def main() -> None:
     logger.info("🚀 Start Pixora Bot")

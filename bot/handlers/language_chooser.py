@@ -1,32 +1,38 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
+
+from bot.keyboards.lang_keyboard import get_language_inline_keyboard, get_main_reply_keyboard
 from data.models.user import User
 from data.repositories.user_repository import user_repository
-from bot.utils.translation import get_text, get_lang
-
+from bot.utils.translation import get_text
+from data.supported_languages import LANG_CODES
 router = Router()
 
-@router.message(Command("start"))
+@router.message(F.text.in_(["Change language", "Zmień język", "Сменить язык", "Змінити мову"]))
 async def cmd_start(message: Message) -> None:
     from_user = message.from_user
+    lang = await user_repository.get_user_lang(from_user.id)
+    text = await get_text(lang, "choose_language")
+    keyboard = await get_language_inline_keyboard()
+    await message.answer(text, reply_markup=keyboard)
 
-    user = await user_repository.get_by_id(from_user.id)
+@router.callback_query(F.data.in_(LANG_CODES))
+async def language_chosen(callback: CallbackQuery):
+    new_lang = callback.data
+    user_id  = callback.from_user.id
 
-    if not user:
-        new_user = User(id=from_user.id, username=from_user.username, language_code=from_user.language_code, full_name=from_user.full_name)
-        await user_repository.save(new_user)
-        print(f"New user added {new_user.id}: added to db")
+    user = await user_repository.get_by_id(user_id)
+    if user:
+        user.language_code = new_lang
+        await user_repository.save(user)
 
-    text = await get_text(await get_lang(message.from_user.id), "start")
-    await message.answer(text)
+    text = await get_text(new_lang, "language_changed")
 
-@router.message(Command("help"))
-async def cmd_help(message: Message) -> None:
-    text = await get_text(await get_lang(message.from_user.id), "help")
-    await message.answer(text)
+    await callback.answer(text, show_alert=True)
 
-@router.message()
-async def fallback(message: Message) -> None:
-    text = await get_text(await get_lang(message.from_user.id), "fallback")
-    await message.answer(text)
+    main_kb  = await get_main_reply_keyboard(new_lang)
+
+    #await callback.message.edit_text(text)
+    await callback.message.delete()
+    await callback.message.answer(text=text, reply_markup=main_kb)
