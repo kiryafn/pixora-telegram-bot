@@ -1,12 +1,11 @@
 from aiogram import Router
-from aiogram.filters import Command, BaseFilter
-from aiogram.types import Message, FSInputFile
+from aiogram.filters import Command
+from aiogram.types import Message
 
-from bot.keyboards.lang_keyboard import get_main_reply_keyboard
+from bot.keyboards import get_main_reply_keyboard
 from data.models.user import User
 from data.repositories.user_repository import user_repository
 from bot.utils.translation import get_text
-from aiogram import F
 from bot.core.logger import logger
 
 router = Router()
@@ -32,11 +31,6 @@ async def cmd_start(message: Message) -> None:
 async def cmd_help(message: Message) -> None:
     text = await get_text(await user_repository.get_user_lang(message.from_user.id), "help")
     await message.answer(text)
-
-@router.message(F.text == "🤡")
-async def clown_reply(message: Message) -> None:
-    await message.answer("Сам клоун")
-    await message.answer("🤡")
 
 @router.message()
 async def fallback(message: Message) -> None:

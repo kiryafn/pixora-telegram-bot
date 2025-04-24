@@ -1,9 +1,7 @@
 from aiogram import Router, F
-from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from bot.keyboards.lang_keyboard import get_language_inline_keyboard, get_main_reply_keyboard
-from data.models.user import User
+from bot.keyboards import get_language_inline_keyboard, get_main_reply_keyboard
 from data.repositories.user_repository import user_repository
 from bot.utils.translation import get_text
 from data.supported_languages import LANG_CODES
