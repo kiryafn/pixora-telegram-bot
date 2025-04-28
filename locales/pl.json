@@ -1,0 +1,8 @@
+{
+  "start": "👋 Cześć! Jestem Pixora — inteligentny bot do wyszukiwania ofert pracy, który pomoże Ci znaleźć oferty dopasowane do Twoich preferencji.\n\nCo potrafię:\n1️⃣ Wyszukiwanie ofert pracy po słowach kluczowych, mieście, wynagrodzeniu i innych filtrach.\n2️⃣ Natychmiastowe powiadomienia o nowych ofertach.\n3️⃣ Zarządzanie subskrypcjami, aby nic Cię nie ominęło.\n\n🔧 Aby rozpocząć, ustaw preferencje wyszukiwania za pomocą /setprefs\n📋 Aby zobaczyć wszystkie komendy — użyj /help\n\n💡 Dlaczego warto wybrać Pixora?\n✔️ Szybkie i bezspamu wyszukiwanie pracy.\n✔️ Wygoda — wszystko w Telegramie.\n✔️ Elastyczność — filtry dopasowane do Ciebie.\n✔️ Bezpieczeństwo — Twoje dane są chronione.\n\n🚀 Gotowy, by rozpocząć poszukiwanie pracy marzeń? Ruszamy!",
+  "fallback": "❓Nie znam jeszcze tej komendy. Spróbuj /help",
+  "help": "🛠 Lista dostępnych komend:\n/start — powitanie i krótki przewodnik\n/help — ta wiadomość\n/setprefs — ustaw lub zmień preferencje wyszukiwania\n/jobs — najnowsze oferty pracy",
+  "start_buttons": ["Zmień język", "Ustaw preferencje"],
+  "choose_language": "Wybierz język",
+  "language_changed": "🇵🇱 Język został zmieniony!"
+}

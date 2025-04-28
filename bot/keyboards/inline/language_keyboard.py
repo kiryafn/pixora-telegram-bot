@@ -1,0 +1,14 @@
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from bot.callback_data.language import LanguageCallback
+
+def get_language_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇬🇧 English", callback_data=LanguageCallback(code="en").pack()),
+            InlineKeyboardButton(text="🇷🇺 Русский", callback_data=LanguageCallback(code="ru").pack()),
+        ],
+        [
+            InlineKeyboardButton(text="🇵🇱 Polski", callback_data=LanguageCallback(code="pl").pack()),
+            InlineKeyboardButton(text="🇺🇦 Українська", callback_data=LanguageCallback(code="uk").pack()),
+        ],
+    ])
