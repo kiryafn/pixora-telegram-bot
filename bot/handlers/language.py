@@ -7,41 +7,37 @@ from bot.core.i18n import _
 from bot.keyboards.inline.language_keyboard import get_language_keyboard
 from bot.callback_data.language import LanguageCallback
 from bot.models import User
-from bot.repositories.user_repository import UserRepository
+from bot.repositories import user_repository
 
 router: Router = Router()
 
 @router.message(Command("language"))
 async def language_handler(message: Message) -> None:
-    async with AsyncSessionLocal() as session:
-        user_repository: UserRepository = UserRepository(session)
-        user: User = await user_repository.get_user_by_id(message.from_user.id)
+    user: User = await user_repository.get_user_by_id(message.from_user.id)
 
-        await message.answer(
-            _("choose_language", lang=user.language),
-            reply_markup=get_language_keyboard()
-        )
+    await message.answer(
+        _("choose_language", lang=user.language),
+        reply_markup=get_language_keyboard()
+    )
 
 @router.callback_query(LanguageCallback.filter())
 async def language_callback_handler(callback: CallbackQuery, callback_data: LanguageCallback) -> None:
     lang_code: str = callback_data.code
 
-    async with AsyncSessionLocal() as session:
-        user_repository: UserRepository = UserRepository(session)
-        user: User = await user_repository.get_user_by_id(callback.from_user.id)
+    user: User = await user_repository.get_user_by_id(callback.from_user.id)
 
-        if user:
-            await user_repository.update_user(
-                user_id=user.id,
-                username=user.username,
-                language=lang_code
-            )
-        else:
-            await user_repository.create_user(
-                user_id=callback.from_user.id,
-                username=callback.from_user.username,
-                language=lang_code
-            )
+    if user:
+        await user_repository.update_user(
+            user_id=user.id,
+            username=user.username,
+            language=lang_code
+        )
+    else:
+        await user_repository.create_user(
+            user_id=callback.from_user.id,
+            username=callback.from_user.username,
+            language=lang_code
+        )
 
     await callback.answer(_("language_changed", lang=user.language))
     await callback.message.edit_text(_("language_changed", lang=user.language))
