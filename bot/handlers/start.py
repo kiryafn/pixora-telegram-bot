@@ -11,12 +11,12 @@ router: Router = Router()
 
 @router.message(CommandStart())
 async def start_handler(message: Message) -> None:
-    user: User = await user_repository.get_user_by_id(message.from_user.id)
+    user: User = await user_repository.get_by_id(message.from_user.id)
 
     if not user:
-        user = await user_repository.create_user(
+        user = await user_repository.save(
             user_id=message.from_user.id,
-            username=message.from_user.username or "Anonymous",
+            username=message.from_user.username or "NO_USERNAME",
             language=message.from_user.language_code or "en"
         )
 

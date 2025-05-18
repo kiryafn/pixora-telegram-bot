@@ -13,7 +13,7 @@ router: Router = Router()
 
 @router.message(Command("language"))
 async def language_handler(message: Message) -> None:
-    user: User = await user_repository.get_user_by_id(message.from_user.id)
+    user: User = await user_repository.get_by_id(message.from_user.id)
 
     await message.answer(
         _("choose_language", lang=user.language),
@@ -24,20 +24,13 @@ async def language_handler(message: Message) -> None:
 async def language_callback_handler(callback: CallbackQuery, callback_data: LanguageCallback) -> None:
     lang_code: str = callback_data.code
 
-    user: User = await user_repository.get_user_by_id(callback.from_user.id)
+    user: User = await user_repository.get_by_id(callback.from_user.id)
 
-    if user:
-        await user_repository.update_user(
-            user_id=user.id,
-            username=user.username,
-            language=lang_code
-        )
-    else:
-        await user_repository.create_user(
-            user_id=callback.from_user.id,
-            username=callback.from_user.username,
-            language=lang_code
-        )
+    await user_repository.save(
+        user_id=user.id,
+        username=user.username,
+        language=lang_code
+    )
 
     await callback.answer(_("language_changed", lang=user.language))
     await callback.message.edit_text(_("language_changed", lang=user.language))

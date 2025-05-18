@@ -11,5 +11,5 @@ router: Router = Router()
 
 @router.message(Command("help"))
 async def help_handler(message: Message) -> None:
-    user: User = await user_repository.get_user_by_id(message.from_user.id)
+    user: User = await user_repository.get_by_id(message.from_user.id)
     await message.answer(_("help", lang=user.language))
