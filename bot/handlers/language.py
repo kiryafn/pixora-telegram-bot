@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from bot.core.i18n import _
+from bot.utils.i18n import _
 from bot.keyboards.inline.language_keyboard import get_language_keyboard
 from bot.callback_data.language import LanguageCallback
 from bot.models import User

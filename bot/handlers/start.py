@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from bot.core.i18n import _
+from bot.utils.i18n import _
 from bot.models import User
 from bot.repositories import user_repository
 
