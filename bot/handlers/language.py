@@ -2,7 +2,6 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from bot.core.data import AsyncSessionLocal
 from bot.core.i18n import _
 from bot.keyboards.inline.language_keyboard import get_language_keyboard
 from bot.callback_data.language import LanguageCallback
@@ -25,12 +24,9 @@ async def language_callback_handler(callback: CallbackQuery, callback_data: Lang
     lang_code: str = callback_data.code
 
     user: User = await user_repository.get_by_id(callback.from_user.id)
+    user.language = lang_code
 
-    await user_repository.save(
-        user_id=user.id,
-        username=user.username,
-        language=lang_code
-    )
+    await user_repository.save(user)
 
     await callback.answer(_("language_changed", lang=user.language))
     await callback.message.edit_text(_("language_changed", lang=user.language))

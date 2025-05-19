@@ -1,7 +1,6 @@
 from aiogram import Router
 from aiogram.types import Message
 
-from bot.core.data import AsyncSessionLocal
 from bot.core.i18n import _
 from bot.models import User
 from bot.repositories import user_repository
