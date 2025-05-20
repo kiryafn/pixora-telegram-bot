@@ -8,7 +8,7 @@ T = TypeVar("T", bound=Base)
 class BaseRepository(Generic[T]):
     model: Type[T]
 
-    def __init__(self, model: Type[T]):
+    def __init__(self, model: Type[T]) -> None:
         self.model = model
 
     async def get_by_id(self, obj_id: int) -> T | None:
