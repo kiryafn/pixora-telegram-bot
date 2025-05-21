@@ -3,35 +3,37 @@ from sqlalchemy import select, delete
 from bot.core.data import async_session
 from bot.models import Base
 
-T = TypeVar("T", bound=Base)
+M = TypeVar("M", bound=Base)
 
-class BaseRepository(Generic[T]):
-    model: Type[T]
-
-    def __init__(self, model: Type[T]) -> None:
+class BaseRepository(Generic[M]):
+    def __init__(self, model: Type[M]) -> None:
         self.model = model
 
-    async def get_by_id(self, obj_id: int) -> T | None:
+    async def get_by_id(self, obj_id: int) -> M | None:
         async with async_session() as session:
-            result = await session.execute(select(self.model).where(obj_id == self.model.id))
-            return result.scalar_one_or_none() #returns one obj or none is more
+            stmt = select(self.model).where(obj_id == self.model.id)
+            result = await session.execute(stmt)
+            return result.scalar_one_or_none()
 
-    async def get_all(self) -> Sequence[T]:
+    async def get_all(self) -> Sequence[M]:
         async with async_session() as session:
-            result = await session.execute(select(self.model))
+            stmt = select(self.model)
+            result = await session.execute(stmt)
             return result.scalars().all()
 
-    async def save(self, obj: T) -> None:
+    async def save(self, obj: M) -> None:
         async with async_session() as session:
             session.add(obj)
             await session.commit()
 
     async def delete_by_id(self, obj_id: int) -> None:
         async with async_session() as session:
-            await session.execute(delete(self.model).where(obj_id == self.model.id))
+            stmt = delete(self.model).where(obj_id == self.model.id)
+            await session.execute(stmt)
             await session.commit()
 
-    async def filter_by(self, **kwargs) -> Sequence[T]:
+    async def filter_by(self, **kwargs) -> Sequence[M]:
         async with async_session() as session:
-            result = await session.execute(select(self.model).filter_by(**kwargs))
+            stmt = select(self.model).filter_by(**kwargs)
+            result = await session.execute(stmt)
             return result.scalars().all()

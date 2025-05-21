@@ -16,7 +16,7 @@ class JobListing(Base):
     company_name: Mapped[str] = mapped_column(String(255), nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
     salary: Mapped[float] = mapped_column(Float, nullable=False)
-    job_url: Mapped[str] = mapped_column(String(255), nullable=False)
+    job_url: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     date_posted: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     job_preferences: Mapped[list["JobPreference"]] = relationship("JobPreference", secondary=job_listing_job_preference, back_populates="job_listings")

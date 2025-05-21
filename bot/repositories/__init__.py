@@ -1,6 +1,6 @@
 from .base_repository import BaseRepository
 from .city_repository import city_repository
-from .country_repository import countries_repository
+from .country_repository import country_repository
 from .job_listing_repository import job_listing_repository
 from .job_preference_repository import job_preference_repository
 from .request_log_repository import request_log_repository

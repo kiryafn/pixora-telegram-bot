@@ -6,4 +6,4 @@ class CountryRepository(BaseRepository[Country]):
     def __init__(self) -> None:
         super().__init__(Country)
 
-countries_repository = CountryRepository()
+country_repository = CountryRepository()
