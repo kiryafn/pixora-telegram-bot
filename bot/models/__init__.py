@@ -1,2 +1,7 @@
 from bot.models.base import Base
 from bot.models.user import User
+from bot.models.job_listing import JobListing
+from bot.models.job_preference import JobPreference
+from bot.models.city import City
+from bot.models.country import Country
+from bot.models.request_log import RequestLog

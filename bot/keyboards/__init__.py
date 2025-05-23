@@ -1,0 +1,3 @@
+from bot.keyboards.inline.language_keyboard import get_language_keyboard
+from bot.keyboards.inline.city_keyboard import get_city_keyboard
+from bot.keyboards.inline.country_keyboard import get_country_keyboard

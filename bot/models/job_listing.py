@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 
-from sqlalchemy import BigInteger, String, Float, DateTime
+from sqlalchemy import BigInteger, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
@@ -19,5 +19,15 @@ class JobListing(Base):
     job_url: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     date_posted: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
-    job_preferences: Mapped[list["JobPreference"]] = relationship("JobPreference", secondary=job_listing_job_preference, back_populates="job_listings")
+    # Добавили поле-ключ к City
+    city_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("cities.id"), nullable=False
+    )
+    # Теперь SQLAlchemy понимает, как связывать JobListing и City
     city: Mapped["City"] = relationship("City", back_populates="job_listings")
+
+    job_preferences: Mapped[list["JobPreference"]] = relationship(
+        "JobPreference",
+        secondary=job_listing_job_preference,
+        back_populates="job_listings",
+    )

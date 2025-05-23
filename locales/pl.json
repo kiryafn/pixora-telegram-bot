@@ -3,6 +3,36 @@
   "fallback": "❓Nie znam jeszcze tej komendy. Spróbuj /help",
   "help": "🛠 Lista dostępnych komend:\n/start — powitanie i krótki przewodnik\n/help — ta wiadomość\n/setprefs — ustaw lub zmień preferencje wyszukiwania\n/jobs — najnowsze oferty pracy",
   "start_buttons": ["Zmień język", "Ustaw preferencje"],
+
   "choose_language": "Wybierz język",
-  "language_changed": "🇵🇱 Język został zmieniony!"
+  "language_changed": "🇵🇱 Język został zmieniony!",
+
+  "country_poland": "Polska 🇵🇱",
+  "country_ukraine": "Ukraina 🇺🇦",
+
+  "choose_country": "Wybierz kraj",
+  "selected_country": "Twój wybór: {country}",
+  "choose_city": "Wybierz miasto",
+  "selected_city": "Twój wybór: {city}",
+  "no_cities_in_country": "W tym kraju nie ma jeszcze obsługiwanych miast. Wkrótce je dodamy 👀",
+  "city_not_found": "Nie znaleziono miasta. Wybierz z listy",
+
+  "enter_title": "Wpisz stanowisko pracy:",
+  "enter_company": "Wpisz firmę (lub kliknij przycisk poniżej, jeśli dowolna):",
+  "selected_any_company": "Twój wybór: {any}",
+  "any": "Dowolna",
+  "enter_min_salary": "Wpisz minimalne wynagrodzenie (liczba):",
+  "error_digits_only": "Wpisz poprawną kwotę. Tylko liczby 🤨",
+
+  "summary": "Sprawdź swoje preferencje:",
+  "country": "Kraj",
+  "city": "Miasto",
+  "title": "Stanowisko",
+  "company": "Firma",
+  "min_salary": "Minimalne wynagrodzenie",
+  "yes": "✅",
+  "no": "❌",
+
+  "saved_successfully": "🎉 Twoje preferencje zostały zapisane! Oczekuj ofert pracy",
+  "operation_cancelled": "🥲 Anulowałeś ustawianie preferencji. Spróbuj ponownie"
 }

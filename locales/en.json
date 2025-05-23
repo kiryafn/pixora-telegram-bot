@@ -3,6 +3,37 @@
   "fallback": "❓I don't know this command yet. Try /help",
   "help": "🛠 List of available commands:\n/start — greeting and short guide\n/help — this message\n/setprefs — set or change search preferences\n/jobs — get the latest job offers",
   "start_buttons": ["Change language", "Set preferences"],
+
   "choose_language": "Please select a language",
-  "language_changed": "🇬🇧 Language updated!"
+  "language_changed": "🇬🇧 Language updated!",
+
+  "country_poland": "Poland 🇵🇱",
+  "country_ukraine": "Ukraine 🇺🇦",
+
+  "choose_country": "Please choose a country",
+  "selected_country": "Your choice: {country}",
+  "choose_city": "Please choose a city",
+  "selected_city": "Your choice: {city}",
+  "no_cities_in_country": "There are no cities in this country that we support. We will add them soon 👀",
+  "city_not_found": "City not found. Please select from keyboard",
+
+  "enter_title": "Enter desired job title:",
+  "enter_company": "Enter company (or press button below if any):",
+  "selected_any_company": "Your choice: {any}",
+  "any": "Any",
+  "enter_min_salary": "Enter minimum salary (number):",
+  "error_digits_only": "Enter valid salary. Only numbers 🤨",
+
+  "summary": "Check your preferences:",
+  "country": "Country",
+  "city": "City",
+  "title": "Job title",
+  "company": "Company",
+  "min_salary": "Minimal salary",
+  "yes": "✅",
+  "no": "❌",
+
+  "saved_successfully": "🎉 Your preferences were successfully saved! Wait for upcoming vacancies",
+  "operation_cancelled": "🥲 You canceled your preferences setting. Try again"
 }
+

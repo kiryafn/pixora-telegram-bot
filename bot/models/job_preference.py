@@ -12,9 +12,8 @@ class JobPreference(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    company: Mapped[str] = mapped_column(String(255), nullable=False)
+    company: Mapped[str] = mapped_column(String(255), nullable=True)
     min_salary: Mapped[float] = mapped_column(Float, nullable=False)
-    max_salary: Mapped[float] = mapped_column(Float, nullable=False)
     city_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("cities.id"), nullable=False)
 
     city: Mapped["City"] = relationship("City", back_populates="job_preferences")
