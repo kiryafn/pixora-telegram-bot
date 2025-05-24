@@ -1,4 +1,3 @@
-# bot/models/country.py
 from __future__ import annotations
 
 from sqlalchemy import BigInteger, String
@@ -12,8 +11,4 @@ class Country(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    # связь со списком городов оставляем
     cities: Mapped[list["City"]] = relationship("City", back_populates="country")
-
-    # removed job_preferences relationship — 
-    # теперь все job_preferences можно получать через country.cities

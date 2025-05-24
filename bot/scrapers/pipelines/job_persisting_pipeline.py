@@ -1,9 +1,10 @@
 import asyncio
 
 from bot.models.job_listing import JobListing
-from bot.scrappers.items.job_listing_item import JobListingItem
+from bot.scrapers.items.job_listing_item import JobListingItem
 from bot.services import job_listing_service
 
+#todo if a job listing under this url exists in the db, we should update it
 
 class JobListingServicePipeline:
 

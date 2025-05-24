@@ -3,8 +3,10 @@ from typing import Generator, Optional, Dict, Any
 
 from scrapy import Spider, Request, Response
 
-from bot.scrappers.items.job_listing_item import JobListingItem
+from bot.scrapers.items.job_listing_item import JobListingItem
 
+#todo если нет подходящих вакансий не возвращать ничего
+#todo сделать обработку по названию компанииё
 
 class PracujSpider(Spider):
     name: str = "pracuj"

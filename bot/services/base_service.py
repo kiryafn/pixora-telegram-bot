@@ -7,16 +7,16 @@ M = TypeVar("M", bound=Base)
 
 class BaseService(ABC, Generic[M]):
     def __init__(self, repository: BaseRepository[M]) -> None:
-        self._repo = repository
+        self.repository = repository
 
     async def get_by_id(self, obj_id: int) -> M | None:
-        return await self._repo.get_by_id(obj_id)
+        return await self.repository.get_by_id(obj_id)
 
     async def get_all(self) -> Sequence[M]:
-        return await self._repo.get_all()
+        return await self.repository.get_all()
 
     async def save(self, entity: M) -> None:
-        await self._repo.save(entity)
+        await self.repository.save(entity)
 
     async def delete_by_id(self, obj_id: int) -> None:
-        await self._repo.delete_by_id(obj_id)
+        await self.repository.delete_by_id(obj_id)

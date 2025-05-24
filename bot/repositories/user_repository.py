@@ -1,5 +1,5 @@
 from bot.models.user import User
-from bot.repositories.base_repository import BaseRepository
+from bot.repositories import BaseRepository
 
 
 class UserRepository(BaseRepository[User]):

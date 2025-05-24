@@ -2,14 +2,13 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.keyboards.inline.company_keyboard import get_company_keyboard
 from bot.keyboards.inline.confirm_keyboard import get_confirm_keyboard
 from bot.keyboards.inline.country_keyboard import get_country_keyboard
 from bot.keyboards.inline.city_keyboard import get_city_keyboard
 from bot.models import JobPreference
-from bot.services import job_preference_service, country_service, city_service
+from bot.services import country_service, city_service
 from bot.dialogs.states.job_preference_states import JobPreferenceStates
 from bot.utils.i18n import _
 from bot.services import user_service
@@ -42,7 +41,7 @@ async def country_chosen(callback: CallbackQuery, state: FSMContext):
         reply_markup=None
     )
 
-    cities = await city_service.get_cities_by_country(country.name)
+    cities = await city_service.get_all_cities_by_country(country.name)
     if not cities:
         return await callback.message.answer(_("no_cities_in_country", lang=lang))
 
@@ -59,7 +58,7 @@ async def paginate_cities(callback: CallbackQuery, state: FSMContext):
     lang = await user_service.get_user_lang(callback.from_user.id)
 
     data = await state.get_data()
-    cities = await city_service.get_cities_by_country(data.get("country_name"))
+    cities = await city_service.get_all_cities_by_country(data.get("country_name"))
     new_page = int(callback.data.split(":", 1)[1])
 
     await callback.message.edit_reply_markup(
