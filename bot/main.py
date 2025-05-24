@@ -8,6 +8,7 @@ from bot.core.data import create_db
 from bot.core.bot import create_bot
 from bot.core.dispatcher import create_dispatcher
 from bot.middlewares import LoggingMiddleware
+from bot.scheduler.jobs import start_scheduler
 from bot.ui.log_window import LogWindow, TkinterLogHandler
 
 log_queue = Queue()
@@ -21,6 +22,9 @@ def start_bot():
     async def bot_main():
         logging.basicConfig(level=logging.INFO)
         await create_db()
+
+        start_scheduler()
+
         bot = create_bot()
         dp = create_dispatcher()
 
