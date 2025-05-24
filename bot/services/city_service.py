@@ -7,7 +7,7 @@ class CityService(BaseService[City]):
     def __init__(self, repository: CityRepository) -> None:
         super().__init__(repository)
 
-    async def get_cities_by_country(self, country_name: str):
+    async def get_all_cities_by_country(self, country_name: str):
         return await city_repository.get_all_cities_by_country(country_name)
 
     async def get_city_by_name_and_country(self, city_name: str, country_name: str):
