@@ -11,4 +11,7 @@ class Country(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    cities: Mapped[list["City"]] = relationship("City", back_populates="country")
+    cities: Mapped[list["City"]] = relationship(
+        "City",
+        back_populates="country"
+    )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 
-from sqlalchemy import BigInteger, String, Float, DateTime, ForeignKey, Boolean
+from sqlalchemy import BigInteger, String, Float, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
@@ -19,11 +19,9 @@ class JobListing(Base):
     job_url: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     date_posted: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_seen: Mapped[bool] = mapped_column(Boolean, default=False)
+    seen_marker: Mapped[str] = mapped_column(String(100), nullable=True)
 
-    city_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("cities.id"), nullable=False
-    )
-    city: Mapped["City"] = relationship("City", back_populates="job_listings")
     job_preferences: Mapped[list["JobPreference"]] = relationship(
         "JobPreference",
         secondary=job_listing_job_preference,

@@ -1,0 +1,1 @@
+from .registry import get_spiders_for_country

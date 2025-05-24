@@ -1,7 +1,8 @@
 from urllib.parse import urlencode
-from typing import Generator, Optional, Dict, Any
+from typing import Generator, Optional, Dict, Any, cast, Iterable
 
-from scrapy import Spider, Request, Response
+from scrapy import Spider, Request
+from scrapy.http import Response
 
 from bot.scrapers.items.job_listing_item import JobListingItem
 
@@ -34,7 +35,8 @@ class PracujSpider(Spider):
         yield Request(url, callback=self.parse_list)
 
     def parse_list(self, response: Response) -> Generator[Request, None, None]:
-        offers = response.css("article.offer")
+        offers = cast(Iterable, response.css("article.offer"))
+
         for offer in offers:
             href: Optional[str] = offer.css(
                 "a.offer-details__title-link::attr(href)"

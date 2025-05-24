@@ -15,4 +15,8 @@ class RequestLog(Base):
     response_time: Mapped[float] = mapped_column(Float)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=False)
 
-    user: Mapped["User"] = relationship("User", back_populates="request_logs", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship(
+        "User",
+        back_populates="request_logs",
+        foreign_keys=[user_id]
+    )
