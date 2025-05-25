@@ -65,5 +65,5 @@ async def process_edit(callback: CallbackQuery, state: FSMContext):
 async def process_okay(callback: CallbackQuery):
     lang = await user_service.get_user_lang(callback.message.chat.id)
     await callback.answer()
+    await callback.message.edit_reply_markup(None)
     await callback.message.answer(text=_("all_good", lang=lang), reply_markup=None)
-
