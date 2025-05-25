@@ -9,25 +9,34 @@ from bot.keyboards.inline.country_keyboard import get_country_keyboard
 from bot.keyboards.inline.city_keyboard import get_city_keyboard
 from bot.models import JobPreference
 from bot.services import country_service, city_service
-from bot.dialogs.states.job_preference_states import JobPreferenceStates
-from bot.utils.i18n import _
+from bot.dialogs.states.job_preference_states import SetPreferenceStates
+from bot.utils.i18n import _, translator
 from bot.services import user_service
 
 router = Router()
 
 @router.message(Command("setprefs"))
 async def set_prefs_command(message: Message, state: FSMContext):
-    lang = await user_service.get_user_lang(message.from_user.id)
+    lang = await user_service.get_user_lang(message.chat.id)
     await state.clear()
 
     await message.answer(
         _("choose_country", lang=lang),
         reply_markup=await get_country_keyboard(lang)
     )
-    await state.set_state(JobPreferenceStates.waiting_for_country)
+    await state.set_state(SetPreferenceStates.waiting_for_country)
+
+_SET_PREFS_BUTTONS = {
+    _('set_preferences', lang=lang)
+    for lang in translator.translations.keys()
+}
+
+@router.message(F.text.in_(_SET_PREFS_BUTTONS))
+async def prefs_via_button_handler(message: Message, state: FSMContext) -> None:
+    await set_prefs_command(message, state)
 
 
-@router.callback_query(JobPreferenceStates.waiting_for_country, F.data.startswith("country:"))
+@router.callback_query(SetPreferenceStates.waiting_for_country, F.data.startswith("country:"))
 async def country_chosen(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
@@ -49,10 +58,10 @@ async def country_chosen(callback: CallbackQuery, state: FSMContext):
         _("choose_city", lang=lang),
         reply_markup=get_city_keyboard(cities, page=1)
     )
-    await state.set_state(JobPreferenceStates.waiting_for_city)
+    await state.set_state(SetPreferenceStates.waiting_for_city)
 
 
-@router.callback_query(JobPreferenceStates.waiting_for_city, F.data.startswith("page:"))
+@router.callback_query(SetPreferenceStates.waiting_for_city, F.data.startswith("page:"))
 async def paginate_cities(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
@@ -62,11 +71,11 @@ async def paginate_cities(callback: CallbackQuery, state: FSMContext):
     new_page = int(callback.data.split(":", 1)[1])
 
     await callback.message.edit_reply_markup(
-        reply_markup=get_city_keyboard(cities, lang, page=new_page)
+        reply_markup=get_city_keyboard(cities, page=new_page)
     )
 
 
-@router.callback_query(JobPreferenceStates.waiting_for_city, F.data.startswith("city:"))
+@router.callback_query(SetPreferenceStates.waiting_for_city, F.data.startswith("city:"))
 async def city_chosen(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
@@ -81,10 +90,10 @@ async def city_chosen(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.message.answer(_("enter_title", lang=lang))
-    await state.set_state(JobPreferenceStates.waiting_for_title)
+    await state.set_state(SetPreferenceStates.waiting_for_title)
 
 
-@router.message(JobPreferenceStates.waiting_for_title)
+@router.message(SetPreferenceStates.waiting_for_title)
 async def title_chosen(message: Message, state: FSMContext):
     lang = await user_service.get_user_lang(message.from_user.id)
     await state.update_data(title=message.text)
@@ -93,11 +102,11 @@ async def title_chosen(message: Message, state: FSMContext):
         _("enter_company", lang=lang),
         reply_markup=get_company_keyboard(lang)
     )
-    await state.set_state(JobPreferenceStates.waiting_for_company)
+    await state.set_state(SetPreferenceStates.waiting_for_company)
 
 
 # Новый хэндлер для кнопки "Any company"
-@router.callback_query(JobPreferenceStates.waiting_for_company, F.data == "company:any")
+@router.callback_query(SetPreferenceStates.waiting_for_company, F.data == "company:any")
 async def any_company_chosen(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
@@ -107,20 +116,20 @@ async def any_company_chosen(callback: CallbackQuery, state: FSMContext):
     # Убираем inline-клавиатуру
     await callback.message.edit_text(text=_("selected_any_company", lang=lang).format(any=data["company_name"]), reply_markup=None)
     await callback.message.answer(_("enter_min_salary", lang=lang))
-    await state.set_state(JobPreferenceStates.waiting_for_min_salary)
+    await state.set_state(SetPreferenceStates.waiting_for_min_salary)
 
 
-@router.message(JobPreferenceStates.waiting_for_company)
+@router.message(SetPreferenceStates.waiting_for_company)
 async def company_chosen(message: Message, state: FSMContext):
     # Этот хэндлер срабатывает, если пользователь вводит текст вручную
     lang = await user_service.get_user_lang(message.from_user.id)
     await state.update_data(company=message.text, company_name=message.text)
     await message.answer(_("enter_min_salary", lang=lang))
-    await state.set_state(JobPreferenceStates.waiting_for_min_salary)
+    await state.set_state(SetPreferenceStates.waiting_for_min_salary)
 
 
 
-@router.message(JobPreferenceStates.waiting_for_min_salary)
+@router.message(SetPreferenceStates.waiting_for_min_salary)
 async def min_sal_chosen(message: Message, state: FSMContext):
     lang = await user_service.get_user_lang(message.from_user.id)
 
@@ -144,54 +153,52 @@ async def min_sal_chosen(message: Message, state: FSMContext):
         reply_markup=get_confirm_keyboard(lang),
         parse_mode="Markdown"
     )
-    await state.set_state(JobPreferenceStates.confirming)
+    await state.set_state(SetPreferenceStates.confirming)
 
 
-@router.callback_query(JobPreferenceStates.confirming, F.data == "confirm:yes")
+@router.callback_query(SetPreferenceStates.confirming, F.data == "confirm:yes")
 async def process_save(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
-    # получаем язык перевода
     user = await user_service.get_by_id(callback.from_user.id)
     lang = user.language
 
     data = await state.get_data()
-    from bot.models.user import User
     from sqlalchemy import select
-    from sqlalchemy.orm import selectinload
     from bot.core.data import async_session
+    from bot.models.job_preference import JobPreference
 
     async with async_session() as session:
-        # заранее подгружаем job_preferences, чтобы не было lazy-load
-        stmt = (
-            select(User)
-            .options(selectinload(User.job_preferences))
-            .where(User.id == callback.from_user.id)
-        )
+        # 1) ищем существующую преференцию по user_id
+        stmt = select(JobPreference).where(JobPreference.user_id == callback.from_user.id)
         result = await session.execute(stmt)
-        db_user = result.scalar_one()
+        pref = result.scalar_one_or_none()
 
-        # создаём новую запись JobPreference и сразу её добавляем в эту же сессию
-        pref = JobPreference(
-            title=data["title"],
-            company=data["company"] if data["company"] else None,
-            min_salary=data["min_salary"],
-            city_id=data["city_id"]
-        )
-        session.add(pref)
+        if pref is None:
+            # 2a) нет — создаём новую
+            pref = JobPreference(
+                user_id=callback.from_user.id,
+                title=data["title"],
+                company=data["company"] or None,
+                min_salary=data["min_salary"],
+                city_id=data["city_id"],
+            )
+            session.add(pref)
+        else:
+            # 2b) есть — обновляем поля
+            pref.title = data["title"]
+            pref.company = data["company"] or None
+            pref.min_salary = data["min_salary"]
+            pref.city_id = data["city_id"]
 
-        # привязываем предпочтение к пользователю
-        db_user.job_preferences.append(pref)
-
-        # фиксируем всё сразу
         await session.commit()
 
-    # отвечаем пользователю об успехе
+    # 3) отвечаем пользователю
     await callback.message.edit_reply_markup(None)
     await callback.message.answer(_("saved_successfully", lang=lang))
     await state.clear()
 
 
-@router.callback_query(JobPreferenceStates.confirming, F.data == "confirm:no")
+@router.callback_query(SetPreferenceStates.confirming, F.data == "confirm:no")
 async def process_cancel(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
