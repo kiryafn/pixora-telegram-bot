@@ -1,6 +1,7 @@
 from __future__ import annotations
+from datetime import datetime
 
-from sqlalchemy import BigInteger, String
+from sqlalchemy import BigInteger, String, Float, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
@@ -13,15 +14,12 @@ class JobListing(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     job_title: Mapped[str] = mapped_column(String(255), nullable=False)
     company_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    company_logo_url: Mapped[str] = mapped_column(String(1000), nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
-    salary: Mapped[str] = mapped_column(String(255), nullable=False)
+    salary: Mapped[float] = mapped_column(Float, nullable=False)
     #date_posted: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    #TODO: deadline date
     job_schedule: Mapped[str] = mapped_column(String(255), nullable=False)
 
-
-    job_url: Mapped[str] = mapped_column(String(1000), nullable=False, unique=True)
+    job_url: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     # is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     job_preferences: Mapped[list["JobPreference"]] = relationship(

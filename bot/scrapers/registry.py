@@ -1,7 +1,7 @@
 from typing import Type
 from scrapy.spiders import Spider
 
-from bot.scrapers.spiders.pracuj_spider import PracujSpider
+from bot.scrapers.spiders import PracujSpider
 
 COUNTRY_SPIDER_MAP: dict[str, list[Type[Spider]]] = {
     "poland": [PracujSpider],

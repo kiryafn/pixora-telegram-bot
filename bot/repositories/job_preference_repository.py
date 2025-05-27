@@ -1,9 +1,9 @@
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 
-from bot.core.data import async_session
+from bot.configuration.database import async_session
 from bot.models import City
-from bot.models.job_preference import JobPreference
+from bot.models import JobPreference
 from bot.repositories import BaseRepository
 
 

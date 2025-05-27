@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from bot.keyboards.reply.main_keyboard import get_main_keyboard
+from bot.keyboards import get_main_keyboard
 from bot.services import user_service
 from bot.utils.i18n import _
 from bot.models import User

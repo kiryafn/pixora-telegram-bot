@@ -29,11 +29,15 @@
   "error_digits_only": "Wpisz poprawną kwotę. Tylko liczby 🤨",
 
   "summary": "Sprawdź swoje preferencje:",
-  "country": "Kraj",
-  "city": "Miasto",
-  "title": "Stanowisko",
-  "company": "Firma",
-  "min_salary": "Minimalne wynagrodzenie",
+  "country": "🗺️Kraj",
+  "city": "📍Miasto",
+  "location": "📍Lokalizacja",
+  "title": "🖊️Nazwa stanowiska",
+  "company": "🏢Firma",
+  "min_salary": "💰Minimalna pensja",
+  "salary": "💰Wynagrodzenie",
+  "job_url": "⛓️‍💥Zobacz ofertę",
+
 
   "yes": "✅",
   "no": "❌",

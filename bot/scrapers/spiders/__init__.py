@@ -1,0 +1,1 @@
+from .pracuj_spider import PracujSpider

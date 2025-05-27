@@ -1,7 +1,6 @@
 import logging
 import tkinter as tk
 from queue import Queue
-from threading import Thread
 
 class TkinterLogHandler(logging.Handler):
     def __init__(self, log_queue: Queue):

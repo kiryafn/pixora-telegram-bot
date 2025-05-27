@@ -1,4 +1,4 @@
-from bot.models.user import User
+from bot.models import User
 from bot.repositories import BaseRepository
 
 

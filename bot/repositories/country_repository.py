@@ -1,8 +1,8 @@
 from sqlalchemy import select
 
-from bot.core.data import async_session
+from bot.configuration.database import async_session
 from bot.models import JobPreference, City
-from bot.models.country import Country
+from bot.models import Country
 from bot.repositories import BaseRepository
 
 

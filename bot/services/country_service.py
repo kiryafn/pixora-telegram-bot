@@ -1,5 +1,5 @@
-from bot.models.country import Country
-from bot.repositories.country_repository import CountryRepository, country_repository
+from bot.models import Country
+from bot.repositories import CountryRepository, country_repository
 from bot.services import BaseService
 
 

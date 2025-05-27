@@ -2,16 +2,18 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
+from sqlalchemy import select
 
-from bot.keyboards.inline.company_keyboard import get_company_keyboard
-from bot.keyboards.inline.confirm_keyboard import get_confirm_keyboard
-from bot.keyboards.inline.country_keyboard import get_country_keyboard
-from bot.keyboards.inline.city_keyboard import get_city_keyboard
-from bot.models import JobPreference
-from bot.services import country_service, city_service
-from bot.dialogs.states.job_preference_states import SetPreferenceStates
+from bot.keyboards import get_company_keyboard
+from bot.keyboards import get_confirm_keyboard
+from bot.keyboards import get_country_keyboard
+from bot.keyboards import get_city_keyboard
+from bot.services import country_service, city_service, user_service
+from bot.dialogs import SetPreferenceStates
 from bot.utils.i18n import _, translator
-from bot.services import user_service
+from bot.configuration.database import async_session
+from bot.models.job_preference import JobPreference
+
 
 router = Router()
 
@@ -163,18 +165,13 @@ async def process_save(callback: CallbackQuery, state: FSMContext):
     lang = user.language
 
     data = await state.get_data()
-    from sqlalchemy import select
-    from bot.core.data import async_session
-    from bot.models.job_preference import JobPreference
 
     async with async_session() as session:
-        # 1) ищем существующую преференцию по user_id
         stmt = select(JobPreference).where(JobPreference.user_id == callback.from_user.id)
         result = await session.execute(stmt)
         pref = result.scalar_one_or_none()
 
         if pref is None:
-            # 2a) нет — создаём новую
             pref = JobPreference(
                 user_id=callback.from_user.id,
                 title=data["title"],
@@ -184,7 +181,6 @@ async def process_save(callback: CallbackQuery, state: FSMContext):
             )
             session.add(pref)
         else:
-            # 2b) есть — обновляем поля
             pref.title = data["title"]
             pref.company = data["company"] or None
             pref.min_salary = data["min_salary"]
@@ -192,7 +188,6 @@ async def process_save(callback: CallbackQuery, state: FSMContext):
 
         await session.commit()
 
-    # 3) отвечаем пользователю
     await callback.message.edit_reply_markup(None)
     await callback.message.answer(_("saved_successfully", lang=lang))
     await state.clear()

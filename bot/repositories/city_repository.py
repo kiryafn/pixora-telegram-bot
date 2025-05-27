@@ -2,9 +2,9 @@ from typing import Sequence
 
 from sqlalchemy import select
 
-from bot.models.city import City
+from bot.models import City
 from bot.repositories import BaseRepository
-from bot.core.data import async_session
+from bot.configuration.database import async_session
 
 
 class CityRepository(BaseRepository[City]):

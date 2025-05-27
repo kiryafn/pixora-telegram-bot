@@ -1,7 +1,7 @@
-from bot.models.job_preference import JobPreference
-from bot.repositories.city_repository import CityRepository, city_repository
-from bot.repositories.job_preference_repository import JobPreferenceRepository, job_preference_repository
-from bot.repositories.user_repository import UserRepository, user_repository
+from bot.models import JobPreference
+from bot.repositories import CityRepository, city_repository
+from bot.repositories import JobPreferenceRepository, job_preference_repository
+from bot.repositories import UserRepository, user_repository
 from bot.services import BaseService
 
 

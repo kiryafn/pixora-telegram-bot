@@ -15,7 +15,6 @@ class LoggingMiddleware(BaseMiddleware):
             try:
                 lang = await user_service.get_user_lang(user.id) or DEFAULT_LANG
             except Exception as e:
-                # например, пользователя нет — логируем и подставляем дефолт
                 logger.warning(f"Can't fetch language for user {user.id}: {e}")
                 lang = DEFAULT_LANG
 

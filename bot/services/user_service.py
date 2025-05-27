@@ -1,5 +1,5 @@
 from bot.models import User
-from bot.repositories.user_repository import UserRepository, user_repository
+from bot.repositories import UserRepository, user_repository
 from bot.services import BaseService
 
 

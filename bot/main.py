@@ -1,4 +1,3 @@
-# File: bot/main.py
 
 import logging
 import asyncio
@@ -6,9 +5,9 @@ from queue import Queue
 from threading import Thread
 
 from bot.core import logger
-from bot.core.data import create_db
-from bot.core.bot import create_bot
-from bot.core.dispatcher import create_dispatcher
+from bot.configuration import create_db
+from bot.configuration import create_bot
+from bot.configuration import create_dispatcher
 from bot.middlewares import LoggingMiddleware
 from bot.ui.log_window import LogWindow, TkinterLogHandler
 

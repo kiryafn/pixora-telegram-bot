@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Generic, TypeVar, Sequence
 from bot.models import Base
-from bot.repositories.base_repository import BaseRepository
+from bot.repositories import BaseRepository
 
 M = TypeVar("M", bound=Base)
 
