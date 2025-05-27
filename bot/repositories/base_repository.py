@@ -21,10 +21,12 @@ class BaseRepository(Generic[M]):
             result = await session.execute(stmt)
             return result.scalars().all()
 
-    async def save(self, obj: M) -> None:
+    async def save(self, obj: M) -> M:
         async with async_session() as session:
             session.add(obj)
             await session.commit()
+            await session.refresh(obj)
+            return obj
 
     async def delete_by_id(self, obj_id: int) -> None:
         async with async_session() as session:

@@ -15,8 +15,8 @@ class BaseService(ABC, Generic[M]):
     async def get_all(self) -> Sequence[M]:
         return await self.repository.get_all()
 
-    async def save(self, entity: M) -> None:
-        await self.repository.save(entity)
+    async def save(self, entity: M) -> M:
+        return await self.repository.save(entity)
 
     async def delete_by_id(self, obj_id: int) -> None:
         await self.repository.delete_by_id(obj_id)

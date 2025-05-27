@@ -10,7 +10,7 @@ class PracujSpider(Spider):
 
     def __init__(self, preference_id: int, position: str, company: str, location: str, min_salary: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.preference_id = preference_id
+        self.preference_id = int(preference_id)
         self.keyword = f"{company} {position}"
         self.location = location
         self.min_salary = int(min_salary)
