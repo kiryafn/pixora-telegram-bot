@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Bot
 
-from bot.models import ListingPreference, JobListing
+from bot.core import logger
 from bot.services import user_service, job_preference_service, listing_preference_service, notification_service, \
     job_listing_service
 
@@ -12,6 +12,10 @@ async def notify_users_about_new_jobs(bot: Bot) -> None:
 
     for user in users:
         pref = await job_preference_service.get_preference_by_user_id(user.id)
+        if not pref:
+            logger.warning(f"User {user.id} has no preferences settings, we skip")
+            continue
+
         # TODO: ДОБАВИТЬ ПОДДЕРЖКУ МНОЖЕСТВА ПРЕФЕРЕНЦИЙ ДЛЯ ЮЗЕРА
         unseen = await listing_preference_service.get_all_unseen_by_preference_id(pref.id)
 

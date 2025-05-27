@@ -8,6 +8,7 @@ from bot.configuration.dispatcher import create_dispatcher
 from bot.core import logger
 from bot.configuration import create_db
 from bot.configuration import create_bot
+from bot.core.notification_loop import notify_users_about_new_jobs
 from bot.middlewares import LoggingMiddleware
 from bot.ui.log_window import LogWindow, TkinterLogHandler
 
@@ -26,6 +27,8 @@ def start_bot():
         dp = create_dispatcher()
         dp.update.middleware(LoggingMiddleware())
         logger.info("✅ Handlers are registered")
+
+        await notify_users_about_new_jobs(bot=bot)
 
         try:
             await dp.start_polling(bot, handle_signals=False)
