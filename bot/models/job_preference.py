@@ -4,7 +4,7 @@ from sqlalchemy import BigInteger, String, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
-from bot.models.job_listing_job_preference import job_listing_job_preference
+from bot.models.listing_preference import ListingPreference
 
 
 class JobPreference(Base):
@@ -20,16 +20,25 @@ class JobPreference(Base):
     city: Mapped["City"] = relationship(
         "City",
         back_populates="job_preferences",
-        lazy="selectin",
+        lazy="selectin"
     )
+
     user: Mapped["User"] = relationship(
         "User",
         back_populates="job_preferences",
+        lazy="selectin"
+    )
+
+    listing_preferences: Mapped[list[ListingPreference]] = relationship(
+        "ListingPreference",
+        back_populates="job_preference",
+        cascade="all, delete-orphan",
         lazy="selectin",
     )
+
     job_listings: Mapped[list["JobListing"]] = relationship(
         "JobListing",
-        secondary=job_listing_job_preference,
+        secondary="listing_preferences",
         back_populates="job_preferences",
         lazy="selectin",
     )

@@ -8,8 +8,9 @@ class PracujSpider(Spider):
     name = "pracuj"
     allowed_domains = ["pracuj.pl"]
 
-    def __init__(self, keyword: str, location: str, min_salary: int, *args, **kwargs):
+    def __init__(self, preference_id: int, keyword: str, location: str, min_salary: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.preference_id = preference_id
         self.keyword = keyword
         self.location = location
         self.min_salary = int(min_salary)
