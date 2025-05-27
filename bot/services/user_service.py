@@ -10,5 +10,8 @@ class UserService(BaseService[User]):
     async def get_user_lang(self, id):
         return await user_repository.get_user_lang(id)
 
+    async def get_all_active(self) -> User | None:
+        return await user_repository.get_all_active()
+
 
 user_service = UserService(user_repository)
