@@ -6,3 +6,4 @@ from bot.models.listing_preference import ListingPreference
 from bot.models.city import City
 from bot.models.country import Country
 from bot.models.request_log import RequestLog
+from bot.models.listing_preference import ListingPreference
