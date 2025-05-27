@@ -41,5 +41,16 @@ class ListingPreferenceRepository(BaseRepository[ListingPreference]):
             result = await session.execute(stmt)
             return result.scalars().all()
 
+    async def get_by_preference_id_and_listing_id(self, preference_id: int, listing_id: int, ) -> ListingPreference | None:
+        async with async_session() as session:
+            stmt = (
+                select(ListingPreference)
+                .where(
+                    ListingPreference.job_preference_id == preference_id,
+                    ListingPreference.job_listing_id == listing_id,
+                )
+            )
+            result = await session.execute(stmt)
+            return result.scalar_one_or_none()
 
 listing_preference_repository = ListingPreferenceRepository()
