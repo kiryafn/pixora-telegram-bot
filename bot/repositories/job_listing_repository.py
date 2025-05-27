@@ -30,32 +30,5 @@ class JobListingRepository(BaseRepository[JobListing]):
             result = await session.execute(stmt)
             return result.scalars().all()
 
-    """
-    async def mark_all_not_seen(self, preference_id: int) -> None:
-        async with async_session() as session:
-            stmt = (
-                update(JobListing)
-                .where(JobListing.job_preferences.any(JobPreference.id == preference_id))
-                .values(is_seen=False, seen_marker=None)
-            )
-
-            await session.execute(stmt)
-            await session.commit()
-
-    async def expire_not_seen(self, preference_id: int, marker: str) -> None:
-        async with async_session() as session:
-            stmt = (
-                update(JobListing)
-                .where(
-                    JobListing.job_preferences.any(JobPreference.id == preference_id),
-                    JobListing.seen_marker != marker
-                )
-                .values(is_active=False)
-            )
-
-            await session.execute(stmt)
-            await session.commit()
-    """
-
 
 job_listing_repository = JobListingRepository()
