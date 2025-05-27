@@ -16,7 +16,7 @@ class JobPreferenceService(BaseService[JobPreference]):
         self.user_repository = user_repository
         self.city_repository = city_repository
 
-    async def save(self, job_preference: JobPreference) -> None:
+    async def save(self, job_preference: JobPreference) -> JobPreference:
         user = await self.user_repository.get_by_id(job_preference.user_id)
         if not user:
             raise Exception(f"User {job_preference.user_id} not found")
@@ -25,7 +25,7 @@ class JobPreferenceService(BaseService[JobPreference]):
         if not city:
             raise Exception(f"City {job_preference.city_id} not found")
 
-        await self.repository.save(job_preference)
+        return await self.repository.save(job_preference)
 
     async def get_preference_by_user_id(self, id: int):
         return await job_preference_repository.get_by_user_id(id)

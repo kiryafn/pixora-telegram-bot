@@ -14,11 +14,11 @@ class JobListingService(BaseService[JobListing]):
         self.job_preference_repository = job_preference_repository
 
     #todo add validation
-    async def save(self, job_listing: JobListing) -> None:
+    async def save(self, job_listing: JobListing) -> JobListing:
         existing = await self.repository.get_by_job_url(job_listing.job_url)
         if existing:
             pass
-        await self.repository.save(job_listing)
+        return await self.repository.save(job_listing)
 
     async def get_by_job_url(self, url: str) -> JobListing | None:
         return await self.repository.get_by_job_url(url)

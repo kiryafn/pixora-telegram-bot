@@ -9,12 +9,12 @@ class RequestLogService(BaseService[RequestLog]):
         super().__init__(repository)
         self.user_repository = user_repository
 
-    async def save(self, request: RequestLog) -> None:
+    async def save(self, request: RequestLog) -> RequestLog:
         user = await user_repository.get_by_id(request.user_id)
         if not user:
             raise Exception(f"User {request.user_id} not found")
 
-        await self.repository.save(request)
+        return await self.repository.save(request)
 
 
 request_log_service = RequestLogService(request_log_repository, user_repository)
