@@ -41,6 +41,7 @@
   "edit": "Edit ✍️",
 
   "all_good": "Everything is okay. Wait for new vacancies! 🧑🏼‍💻",
+  "no_preferences": "Unfortunately, you don’t have any job search preferences yet. Set them now with /setprefs or press the appropriate button",
 
   "saved_successfully": "🎉 Your preferences were successfully saved! Wait for upcoming vacancies",
   "operation_cancelled": "🥲 You canceled your preferences setting. Try again"

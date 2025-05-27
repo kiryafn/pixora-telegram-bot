@@ -41,6 +41,7 @@
   "edit": "Edytuj ✍️",
 
   "all_good": "Wszystko w porządku. Czekaj na nowe oferty pracy! 🧑🏼‍💻",
+  "no_preferences": "Niestety, nie masz jeszcze preferencji wyszukiwania pracy. Ustaw je teraz komendą /setprefs lub naciśnij odpowiedni przycisk",
 
   "saved_successfully": "🎉 Twoje preferencje zostały zapisane! Oczekuj ofert pracy",
   "operation_cancelled": "🥲 Anulowałeś ustawianie preferencji. Spróbuj ponownie"
