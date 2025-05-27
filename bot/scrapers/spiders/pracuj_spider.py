@@ -70,17 +70,20 @@ class PracujSpider(Spider):
         item["company"] = response.css(
             "#offer-header > div.cy9wb15 > div > div.oheatec > h2::text"
         ).get(default="").strip()
-        item["location"] = response.css(
+        item["company_logo_url"] = response.css(
+            "#offer-header > div.cy9wb15 > div.cmqurxq > div.l1d9j6zz > picture > img::attr(src)"        ).get(default="").strip()
+        location = response.css(
             "#offer-header > ul.caor1s3 > li:nth-child(1) > div.tchzayo > div.t1g3wgsd > a::text"
         ).get(default="").strip()
+        item["location"] = location.strip() if location else self.location
         salary = response.css(
             "#offer-header > div.cy9wb15 > div.c1prh5n1 > div > div > div > div.s1n75vtn::text"
         ).get()
-        item["salary"] = salary.strip() if salary and salary.strip() else None
+        item["salary"] = salary.strip() if salary and salary.strip() else "NA"
         schedule = response.css(
             "#offer-header > ul.caor1s3 > li.fillNth.lowercase.c196gesj > div.tchzayo > div::text"
         ).get()
-        item["job_schedule"] = schedule.strip() if schedule and schedule.strip() else "No information"
+        item["job_schedule"] = schedule.strip() if schedule and schedule.strip() else "NA"
         yield item
 
     def _err(self, failure):

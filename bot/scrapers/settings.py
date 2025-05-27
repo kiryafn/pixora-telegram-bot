@@ -19,8 +19,7 @@ DEFAULT_REQUEST_HEADERS = {
 }
 
 ITEM_PIPELINES = {
-    'bot.scrapers.pipelines.salary_normalisation_pipeline.SalaryNormalizationPipeline' : 300,
-    'bot.scrapers.pipelines.job_persisting_pipeline.JobListingServicePipeline': 500,
+    'bot.scrapers.pipelines.job_persisting_pipeline.JobListingServicePipeline': 300,
 }
 
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
