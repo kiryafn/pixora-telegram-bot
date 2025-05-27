@@ -16,7 +16,7 @@ class JobListing(Base):
     company_name: Mapped[str] = mapped_column(String(255), nullable=False)
     company_logo_url: Mapped[str] = mapped_column(String(1000), nullable=False)
     location: Mapped[str] = mapped_column(String(255), nullable=False)
-    salary: Mapped[float] = mapped_column(Float, nullable=False)
+    salary: Mapped[str] = mapped_column(String(255), nullable=False)
     #date_posted: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     job_schedule: Mapped[str] = mapped_column(String(255), nullable=False)
     job_url: Mapped[str] = mapped_column(String(1000), nullable=False, unique=True)
