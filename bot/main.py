@@ -4,10 +4,10 @@ import asyncio
 from queue import Queue
 from threading import Thread
 
+from bot.configuration.dispatcher import create_dispatcher
 from bot.core import logger
 from bot.configuration import create_db
 from bot.configuration import create_bot
-from bot.configuration import create_dispatcher
 from bot.middlewares import LoggingMiddleware
 from bot.ui.log_window import LogWindow, TkinterLogHandler
 
