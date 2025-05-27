@@ -1,27 +1,51 @@
-import asyncio
+import logging
 
 from bot.models.job_listing import JobListing
-from bot.scrapers.items.job_listing_item import JobListingItem
-from bot.services import job_listing_service
+from bot.services.job_listing_service import job_listing_service
 
-#todo if a job listing under this url exists in the db, we should update it
+logger = logging.getLogger(__name__)
+
 
 class JobListingServicePipeline:
+    async def process_item(self, item, spider):
+        url = item.get("url")
+        try:
+            existing: JobListing | None = await job_listing_service.get_by_job_url(url)
+        except Exception as e:
+            logger.error(f"❌ Ошибка при проверке существующей записи {url}: {e!r}")
+            existing = None
 
-    def process_item(self, item: JobListingItem, spider) -> JobListingItem:
-        job = JobListing(
-            id=int(item['id']),
-            job_title=item['title'],
-            company_name=item['company'],
-            location=item['location'],
-            salary=float(item['salary']) if item.get('salary') is not None else 0.0,
-            job_url=item['url'],
-            date_posted=item.get('date_posted')
-        )
-
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            loop.create_task(job_listing_service.save_job_listing(job))
+        if existing:
+            existing.job_title = item.get("title", existing.job_title)
+            existing.company_name = item.get("company", existing.company_name)
+            existing.location = item.get("location", existing.location)
+            if item.get("salary"):
+                try:
+                    existing.salary = float(item["salary"].replace("\u00a0", "").replace(",", "."))
+                except Exception:
+                    logger.warning(f"Не удалось преобразовать зарплату '{item['salary']}' для {url}, оставляем прежнее значение {existing.salary}")
+            existing.job_schedule = item.get("job_schedule", existing.job_schedule)
+            job = existing
         else:
-            loop.run_until_complete(job_listing_service.save_job_listing(job))
+            salary_val = 0.0
+            if item.get("salary"):
+                try:
+                    salary_val = float(item["salary"].replace("\u00a0", "").replace(",", "."))
+                except Exception:
+                    logger.warning(f"Не удалось преобразовать зарплату '{item['salary']}' для {url}, устанавливаем 0.0")
+            job = JobListing(
+                job_title    = item.get("title", ""),
+                company_name = item.get("company", ""),
+                location     = item.get("location", ""),
+                salary       = salary_val,
+                job_schedule = item.get("job_schedule", ""),
+                job_url      = url,
+            )
+
+        try:
+            await job_listing_service.save(job)
+            logger.info(f"✅ Saved job: {job.job_url}")
+        except Exception as e:
+            logger.error(f"❌ Ошибка сохранения {job.job_url}: {e!r}")
+
         return item

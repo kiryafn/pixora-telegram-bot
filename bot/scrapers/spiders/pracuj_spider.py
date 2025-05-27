@@ -1,71 +1,87 @@
-from urllib.parse import urlencode
-from typing import Generator, Optional, Dict, Any, cast, Iterable
+import logging
+from urllib.parse import quote, urlencode
 
 from scrapy import Spider, Request
-from scrapy.http import Response
-
 from bot.scrapers.items.job_listing_item import JobListingItem
 
-#todo если нет подходящих вакансий не возвращать ничего
-#todo сделать обработку по названию компанииё
-
 class PracujSpider(Spider):
-    name: str = "pracuj"
-    allowed_domains: list[str] = ["pracuj.pl"]
+    name = "pracuj"
+    allowed_domains = ["pracuj.pl"]
 
-    def __init__(
-            self,
-            keyword: str,
-            location: str,
-            min_salary: int,
-            *args: Any,
-            **kwargs: Any
-    ) -> None:
+    def __init__(self, keyword: str, location: str, min_salary: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.keyword: str = keyword
-        self.location: str = location
-        self.min_salary: int = min_salary
-        self.page: int = 1
+        self.keyword = keyword
+        self.location = location
+        self.min_salary = int(min_salary)
+        self.page = 1
 
-    def start_requests(self) -> Generator[Request, None, None]:
-        base: str = f"https://www.pracuj.pl/praca/{self.keyword};kw/{self.location};wp"
-        params: Dict[str, Any] = {"rd": 0, "sal": self.min_salary, "pn": self.page}
-        query: str = urlencode(params)
-        url: str = f"{base}?{query}"
-        yield Request(url, callback=self.parse_list)
+    def start_requests(self):
+        kw = quote(self.keyword)
+        loc = quote(self.location)
+        params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
+        url = f"https://www.pracuj.pl/praca/{kw};kw/{loc};wp?{urlencode(params)}"
 
-    def parse_list(self, response: Response) -> Generator[Request, None, None]:
-        offers = cast(Iterable, response.css("article.offer"))
+        self.logger.info(f"[PracujSpider] ▶️ стартуем с URL: {url}")
 
-        for offer in offers:
-            href: Optional[str] = offer.css(
-                "a.offer-details__title-link::attr(href)"
-            ).get()
+        yield Request(url, callback=self.parse_list, errback=self._err, dont_filter=True)
+
+    def parse_list(self, response):
+
+        self.logger.debug(f"[PracujSpider] получен ответ: {response.status} — {response.url}")
+
+        if response.status != 200:
+
+            self.logger.error(f"[PracujSpider] Ожидал 200, но получил {response.status}")
+
+            return
+
+        nodes = response.css('a[data-test="link-offer"]')
+
+        self.logger.info(f"[PracujSpider] 👉 найдено офферов: {len(nodes)}")
+
+        if not nodes:
+
+            self.logger.warning(f"[PracujSpider] ❌ ничего не найдено на {response.url}")
+
+            return
+
+        for nd in nodes:
+            href = nd.attrib.get("href")
             if href:
-                yield response.follow(href, callback=self.parse_job)
+                yield response.follow(href, callback=self.parse_job, errback=self._err)
 
-        if offers:
-            self.page += 1
-            base = f"https://www.pracuj.pl/praca/{self.keyword};kw/{self.location};wp"
-            params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
-            next_query = urlencode(params)
-            next_url = f"{base}?{next_query}"
-            yield Request(next_url, callback=self.parse_list)
+        self.page += 1
+        kw = quote(self.keyword)
+        loc = quote(self.location)
+        params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
+        next_url = f"https://www.pracuj.pl/praca/{kw};kw/{loc};wp?{urlencode(params)}"
 
-    def parse_job(self, response: Response) -> Generator[JobListingItem, None, None]:
+        self.logger.info(f"[PracujSpider] ▶️ следующая страница: {next_url}")
+
+        yield Request(next_url, callback=self.parse_list, errback=self._err, dont_filter=True)
+
+    def parse_job(self, response):
+        self.logger.info(f"[PracujSpider] ✏️ JOB {response.status} — {response.url}")
         item = JobListingItem()
         item["url"] = response.url
-        item["id"] = response.url.rstrip("/").split("/")[-1]
-        item["title"] = response.css("h1::text").get(default="").strip()
+        item["title"] = response.css(
+            "#offer-header > div.cy9wb15 > div > div.oheatec > h1::text"
+        ).get(default="").strip()
         item["company"] = response.css(
-            "a.offer-company__name::text"
+            "#offer-header > div.cy9wb15 > div > div.oheatec > h2::text"
         ).get(default="").strip()
         item["location"] = response.css(
-            "li.offer-features__item-location::text"
+            "#offer-header > ul.caor1s3 > li:nth-child(1) > div.tchzayo > div.t1g3wgsd > a::text"
         ).get(default="").strip()
-        salary_text: Optional[str] = response.css(
-            "span.offer-salary span::text"
+        salary = response.css(
+            "#offer-header > div.cy9wb15 > div.c1prh5n1 > div > div > div > div.s1n75vtn::text"
         ).get()
-        item["salary"] = salary_text.strip() if salary_text else None
-        item["date_posted"] = response.css("time::attr(datetime)").get()
+        item["salary"] = salary.strip() if salary and salary.strip() else None
+        schedule = response.css(
+            "#offer-header > ul.caor1s3 > li.fillNth.lowercase.c196gesj > div.tchzayo > div::text"
+        ).get()
+        item["job_schedule"] = schedule.strip() if schedule and schedule.strip() else "No information"
         yield item
+
+    def _err(self, failure):
+        logging.error(f"[PracujSpider] ❗ Ошибка запроса: {failure}")

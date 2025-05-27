@@ -33,4 +33,5 @@ class CityRepository(BaseRepository[City]):
             result = await sess.execute(stmt)
             return result.scalar_one_or_none()
 
+
 city_repository = CityRepository()

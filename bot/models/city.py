@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from sqlalchemy import String, ForeignKey, BigInteger
-from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy import BigInteger, String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
 
@@ -15,9 +15,11 @@ class City(Base):
 
     country: Mapped["Country"] = relationship(
         "Country",
-        back_populates="cities"
+        back_populates="cities",
+        lazy="selectin",
     )
     job_preferences: Mapped[list["JobPreference"]] = relationship(
         "JobPreference",
-        back_populates="city"
+        back_populates="city",
+        lazy="selectin",
     )

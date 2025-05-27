@@ -30,6 +30,7 @@ class JobListingRepository(BaseRepository[JobListing]):
             result = await session.execute(stmt)
             return result.scalars().all()
 
+    """
     async def mark_all_not_seen(self, preference_id: int) -> None:
         async with async_session() as session:
             stmt = (
@@ -54,5 +55,7 @@ class JobListingRepository(BaseRepository[JobListing]):
 
             await session.execute(stmt)
             await session.commit()
+    """
+
 
 job_listing_repository = JobListingRepository()

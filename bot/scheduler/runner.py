@@ -1,42 +1,44 @@
-import asyncio
-from typing import Type, List
 from twisted.internet import asyncioreactor
+asyncioreactor.install()
 
-asyncioreactor.install(asyncio.get_event_loop())
-
+import asyncio
+import logging
 from scrapy.crawler import CrawlerRunner
-from scrapy.spiders import Spider
+from scrapy.utils.defer import deferred_to_future
 from scrapy.utils.log import configure_logging
 from scrapy.settings import Settings
-from scrapy.utils.defer import maybe_deferred_to_future
 
 from bot.scrapers import settings as project_settings
 from bot.scrapers.registry import get_spiders_for_country
 
 configure_logging()
-
 _settings = Settings()
 _settings.setmodule(project_settings)
+log = logging.getLogger("apscheduler")
+log.debug(
+    f"Loaded Scrapy settings: USER_AGENT={_settings.get('USER_AGENT')!r}, "
+    f"COOKIES_ENABLED={_settings.get('COOKIES_ENABLED')!r}, "
+    f"ROBOTSTXT_OBEY={_settings.get('ROBOTSTXT_OBEY')!r}"
+)
 
 _runner = CrawlerRunner(_settings)
 
-
-async def crawl_preference(pref, seen_marker: str) -> None:
-    spiders: List[Type[Spider]] = get_spiders_for_country(pref.city.country.name)
+async def crawl_preference(pref) -> None:
+    logger = logging.getLogger("apscheduler")
+    country = pref.city.country.name
+    spiders = get_spiders_for_country(country)
+    logger.info(f"[crawl_preference] pref_id={pref.id!r} country={country!r} → spiders={spiders!r}")
     if not spiders:
+        logger.warning(f"[crawl_preference] No spiders for country {country!r}")
         return
 
-    deferreds = []
-    for spider_cls in spiders:
-        deferreds.append(
-            _runner.crawl(
-                spider_cls,
-                keyword=pref.title,
-                location=pref.city.name,
-                min_salary=pref.min_salary,
-                seen_marker=seen_marker,
-            )
+    deferreds = [
+        _runner.crawl(
+            spider_cls,
+            keyword=pref.title,
+            location=pref.city.name,
+            min_salary=pref.min_salary,
         )
-
-    futures = [maybe_deferred_to_future(d) for d in deferreds]
-    await asyncio.gather(*futures)
+        for spider_cls in spiders
+    ]
+    await asyncio.gather(*[deferred_to_future(d) for d in deferreds])

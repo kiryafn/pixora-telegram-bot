@@ -22,4 +22,5 @@ class CountryRepository(BaseRepository[Country]):
             result = await session.execute(stmt)
             return result.scalar_one_or_none()
 
+
 country_repository = CountryRepository()

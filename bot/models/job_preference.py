@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import BigInteger, String, Float, ForeignKey
-from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
 from bot.models.job_listing_job_preference import job_listing_job_preference
@@ -19,14 +19,17 @@ class JobPreference(Base):
 
     city: Mapped["City"] = relationship(
         "City",
-        back_populates="job_preferences"
+        back_populates="job_preferences",
+        lazy="selectin",
     )
     user: Mapped["User"] = relationship(
         "User",
-        back_populates="job_preferences"
+        back_populates="job_preferences",
+        lazy="selectin",
     )
     job_listings: Mapped[list["JobListing"]] = relationship(
         "JobListing",
         secondary=job_listing_job_preference,
-        back_populates="job_preferences"
+        back_populates="job_preferences",
+        lazy="selectin",
     )

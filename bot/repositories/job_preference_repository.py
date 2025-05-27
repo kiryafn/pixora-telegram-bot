@@ -31,4 +31,5 @@ class JobPreferenceRepository(BaseRepository[JobPreference]):
             await session.commit()
 
 
+
 job_preference_repository = JobPreferenceRepository()

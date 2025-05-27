@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from bot.models import Base
 
 
@@ -13,5 +14,6 @@ class Country(Base):
 
     cities: Mapped[list["City"]] = relationship(
         "City",
-        back_populates="country"
+        back_populates="country",
+        lazy="selectin",
     )
