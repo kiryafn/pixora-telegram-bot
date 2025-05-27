@@ -1,9 +1,7 @@
 from aiogram import Bot
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from bot.models import User
-from bot.models.job_listing import JobListing
+from bot.models import JobListing
+from bot.keyboards import get_link_keyboard
 from bot.utils.i18n import _
 
 class NotificationService:
@@ -25,15 +23,13 @@ class NotificationService:
 
         text = "\n".join(lines)
 
-        kbbuilder = InlineKeyboardBuilder()
-        kbbuilder.button(text=_("job_url", lang=user.language), url=job.job_url)
 
-
-        await bot.send_message(
+        await bot.send_photo(
             chat_id=user.id,
-            text=text,
+            caption=text,
+            photo=job.company_logo_url,
             parse_mode="Markdown",
-            reply_markup=kbbuilder.as_markup()
+            reply_markup=get_link_keyboard(lang=user.language, url=job.job_url)
         )
 
 notification_service = NotificationService()
