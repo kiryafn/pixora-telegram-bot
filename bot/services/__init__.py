@@ -5,3 +5,4 @@ from .job_listing_service import job_listing_service
 from .job_preference_service import job_preference_service
 from .request_log_service import request_log_service
 from .user_service import user_service
+from .notification_service import notification_service
