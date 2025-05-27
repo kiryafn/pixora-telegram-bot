@@ -1,6 +1,5 @@
 from aiogram.fsm.state import StatesGroup, State
 
-
 class SetPreferenceStates(StatesGroup):
     waiting_for_country = State()
     waiting_for_city = State()

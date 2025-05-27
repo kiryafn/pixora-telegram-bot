@@ -8,7 +8,7 @@ from scrapy.settings import Settings
 from scrapy.utils.defer import deferred_to_future
 from scrapy.utils.log import configure_logging
 
-from bot.services.job_preference_service import job_preference_service
+from bot.services import job_preference_service
 from bot.scrapers import settings as project_settings
 from bot.scrapers.registry import get_spiders_for_country
 

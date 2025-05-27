@@ -1,6 +1,6 @@
-from bot.models.request_log import RequestLog
-from bot.repositories.request_log_repository import RequestLogRepository, request_log_repository
-from bot.repositories.user_repository import UserRepository, user_repository
+from bot.models import RequestLog
+from bot.repositories import RequestLogRepository, request_log_repository
+from bot.repositories import UserRepository, user_repository
 from bot.services import BaseService
 
 

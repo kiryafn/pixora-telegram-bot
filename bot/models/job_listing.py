@@ -20,8 +20,6 @@ class JobListing(Base):
     job_schedule: Mapped[str] = mapped_column(String(255), nullable=False)
 
     job_url: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    # is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-
     job_preferences: Mapped[list["JobPreference"]] = relationship(
         "JobPreference",
         secondary=job_listing_job_preference,

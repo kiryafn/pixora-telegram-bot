@@ -1,9 +1,7 @@
-import logging
-
 from bot.models.job_listing import JobListing
 from bot.services.job_listing_service import job_listing_service
 
-logger = logging.getLogger(__name__)
+from bot.core import logger
 
 
 class JobListingServicePipeline:

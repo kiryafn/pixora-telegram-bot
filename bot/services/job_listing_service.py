@@ -1,8 +1,8 @@
 from typing import Sequence
 
-from bot.models.job_listing import JobListing
-from bot.repositories.job_listing_repository import JobListingRepository, job_listing_repository
-from bot.repositories.job_preference_repository import JobPreferenceRepository, job_preference_repository
+from bot.models import JobListing
+from bot.repositories import JobListingRepository, job_listing_repository
+from bot.repositories import JobPreferenceRepository, job_preference_repository
 from bot.services import BaseService
 
 

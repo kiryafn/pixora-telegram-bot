@@ -4,7 +4,7 @@ from asyncio import Task
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from bot.services.job_preference_service import job_preference_service
+from bot.services import job_preference_service
 from bot.scheduler.runner import crawl_preference
 
 sched = AsyncIOScheduler(timezone="UTC")

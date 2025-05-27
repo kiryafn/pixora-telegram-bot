@@ -1,8 +1,8 @@
-from sqlalchemy import select, Sequence, update
-from bot.core.data import async_session
+from sqlalchemy import select, Sequence
+from bot.configuration.database import async_session
 
-from bot.models.job_listing import JobListing
-from bot.models.job_preference import JobPreference
+from bot.models import JobListing
+from bot.models import JobPreference
 from bot.repositories import BaseRepository
 
 

@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar, Type, Sequence
 from sqlalchemy import select, delete
-from bot.core.data import async_session
+from bot.configuration.database import async_session
 from bot.models import Base
 
 M = TypeVar("M", bound=Base)

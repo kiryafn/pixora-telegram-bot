@@ -1,13 +1,13 @@
 from aiogram import Router, F
 from aiogram.exceptions import TelegramNetworkError
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InputFile, FSInputFile
+from aiogram.types import Message, CallbackQuery
 
 from bot.core import logger
 from bot.dialogs.set_preferences_dialog import set_prefs_command
-from bot.dialogs.states.job_preference_states import EditPreferenceStates
-from bot.keyboards.inline.edit_prefs_keyboard import get_view_confirm_keyboard
+from bot.dialogs import EditPreferenceStates
+from bot.keyboards import get_view_confirm_keyboard
 from bot.services import user_service, job_preference_service
 from bot.utils.i18n import _, translator
 from bot.models import JobPreference
@@ -25,7 +25,7 @@ async def view_preferences_handler(message: Message, state: FSMContext) -> None:
             photo = get_image_file("noprefs")
             await message.answer_photo(photo=photo, caption=_("no_preferences", lang=lang))
         except (FileNotFoundError, TelegramNetworkError) as e:
-            logger.error(f"Cannot send noprefs image: {e}")
+            logger.info(f"Cannot send noprefs image: {e}")
             await message.answer(_("no_preferences", lang=lang))
         return
 

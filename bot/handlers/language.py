@@ -2,18 +2,18 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from bot.keyboards.reply.main_keyboard import get_main_keyboard
+from bot.keyboards import get_main_keyboard
+from bot.services import user_service
 from bot.utils.i18n import _, translator
-from bot.keyboards.inline.language_keyboard import get_language_keyboard
-from bot.callback_data.language import LanguageCallback
+from bot.keyboards import get_language_keyboard
+from bot.callbacks import LanguageCallback
 from bot.models import User
-from bot.repositories import user_repository
 
 router: Router = Router()
 
 @router.message(Command("language"))
 async def language_handler(message: Message) -> None:
-    user: User = await user_repository.get_by_id(message.from_user.id)
+    user: User = await user_service.get_by_id(message.from_user.id)
 
     await message.answer(
         _("choose_language", lang=user.language),
@@ -33,9 +33,9 @@ async def language_via_button_handler(message: Message) -> None:
 async def language_callback_handler(callback: CallbackQuery, callback_data: LanguageCallback) -> None:
     lang_code: str = callback_data.code
 
-    user: User = await user_repository.get_by_id(callback.from_user.id)
+    user: User = await user_service.get_by_id(callback.from_user.id)
     user.language = lang_code
-    await user_repository.save(user)
+    await user_service.save(user)
 
     await callback.answer(_("language_changed", lang=lang_code))
 

@@ -1,7 +1,7 @@
 from .base_repository import BaseRepository
-from .city_repository import city_repository
-from .country_repository import country_repository
-from .job_listing_repository import job_listing_repository
-from .job_preference_repository import job_preference_repository
-from .request_log_repository import request_log_repository
-from .user_repository import user_repository
+from .city_repository import city_repository, CityRepository
+from .country_repository import country_repository, CountryRepository
+from .job_listing_repository import job_listing_repository, JobListingRepository
+from .job_preference_repository import job_preference_repository, JobPreferenceRepository
+from .request_log_repository import request_log_repository, RequestLogRepository
+from .user_repository import user_repository, UserRepository

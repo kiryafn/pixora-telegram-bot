@@ -1,4 +1,4 @@
-from bot.models.request_log import RequestLog
+from bot.models import RequestLog
 from bot.repositories import BaseRepository
 
 

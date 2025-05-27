@@ -1,7 +1,6 @@
 import re
-import logging
 
-logger = logging.getLogger(__name__)
+from bot.core import logger
 
 class SalaryNormalizationPipeline:
     def process_item(self, item, spider):

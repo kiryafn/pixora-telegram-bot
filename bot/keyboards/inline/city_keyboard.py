@@ -4,7 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 def get_city_keyboard(cities: list, page: int = 1) -> InlineKeyboardMarkup:
     ITEMS_PER_PAGE = 9
     total_pages = (len(cities) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
-    # clamp page
+
     page = max(1, min(page, total_pages))
 
     start = (page - 1) * ITEMS_PER_PAGE
@@ -12,7 +12,6 @@ def get_city_keyboard(cities: list, page: int = 1) -> InlineKeyboardMarkup:
     current_chunk = cities[start:end]
 
     builder = InlineKeyboardBuilder()
-    # 3 колонки с городами
     for city in current_chunk:
         builder.button(
             text=city.name,
@@ -20,7 +19,6 @@ def get_city_keyboard(cities: list, page: int = 1) -> InlineKeyboardMarkup:
         )
     builder.adjust(3)
 
-    # Ряд навигации
     nav_buttons = []
     if page > 1:
         nav_buttons.append(

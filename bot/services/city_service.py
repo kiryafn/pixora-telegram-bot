@@ -1,7 +1,7 @@
 from bot.models.city import City
 from bot.repositories import city_repository, country_repository
-from bot.repositories.city_repository import CityRepository
-from bot.repositories.country_repository import CountryRepository
+from bot.repositories import CityRepository
+from bot.repositories import CountryRepository
 from bot.services import BaseService
 
 #todo add custom exception
