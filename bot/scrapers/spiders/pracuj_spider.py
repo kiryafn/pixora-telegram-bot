@@ -71,9 +71,10 @@ class PracujSpider(Spider):
         item["company"] = response.css(
             "#offer-header > div.cy9wb15 > div > div.oheatec > h2::text"
         ).get(default="").strip()
-        item["company_logo_url"] = response.css(
+        company_logo = response.css(
             "#offer-header > div.cy9wb15 > div.cmqurxq > div.l1d9j6zz > picture > img::attr(src)"
         ).get(default="").strip()
+        item["company_logo_url"] = company_logo.strip() if company_logo else "https://i1.sndcdn.com/artworks-tZ7aDyK7PbbMpcf0-z7o8vg-t1080x1080.jpg"
         location = response.css(
             "#offer-header > ul.caor1s3 > li:nth-child(1) > div.tchzayo > div.t1g3wgsd > a::text"
         ).get(default="").strip()
