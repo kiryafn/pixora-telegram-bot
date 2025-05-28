@@ -11,14 +11,14 @@ class JobListingServicePipeline:
         try:
             existing: JobListing | None = await job_listing_service.get_by_job_url(url)
         except Exception as e:
-            logger.error(f"❌ Ошибка при проверке существующей записи {url}: {e!r}")
+            logger.error(f"❌ Error checking existing record {url}: {e!r}")
             existing = None
 
         if existing:
             try:
                 await listing_preference_service.link(existing.id, spider.preference_id)
             except Exception as e:
-                logger.error(f"❌ Ошибка привязки существующей вакансии к преференции: {e!r}")
+                logger.error(f"❌ Error linking existing job to preference: {e!r}")
             return item
 
         job = JobListing(
@@ -35,15 +35,13 @@ class JobListingServicePipeline:
             saved: JobListing = await job_listing_service.save(job)
             logger.info(f"✅ Saved job: {saved.job_url}")
         except Exception as e:
-            logger.error(f"❌ Ошибка сохранения {job.job_url}: {e!r}")
+            logger.error(f"❌ Error saving job {job.job_url}: {e!r}")
             return item
 
         try:
             await listing_preference_service.link(saved.id, spider.preference_id)
-            logger.info(
-                f"🔗 Linked job_listing {saved.id} with preference {spider.preference_id}"
-            )
+            logger.info(f"🔗 Linked job_listing {saved.id} with preference {spider.preference_id}")
         except Exception as e:
-            logger.error(f"❌ Ошибка привязки новой вакансии к преференции: {e!r}")
+            logger.error(f"❌ Error linking new job to preference: {e!r}")
 
         return item

@@ -1,55 +1,57 @@
 import logging
 from urllib.parse import quote, urlencode
 
-from scrapy import Spider, Request
+import scrapy
+from scrapy import Request, Spider
 from bot.scrapers.items.job_listing_item import JobListingItem
+
 
 class PracujSpider(Spider):
     name = "pracuj"
     allowed_domains = ["pracuj.pl"]
 
-    def __init__(self, preference_id: int, position: str, company: str, location: str, min_salary: int, *args, **kwargs):
+    def __init__(
+        self,
+        preference_id: int,
+        position: str,
+        company: str,
+        location: str,
+        min_salary: int,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.preference_id = int(preference_id)
-        self.keyword = f"{company} {position}"
+        self.keyword = " ".join(filter(None, [company, position]))
         self.location = location
         self.min_salary = int(min_salary)
         self.page = 1
 
-    def start_requests(self):
+    async def start(self):
         kw = quote(self.keyword)
         loc = quote(self.location)
         params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
         url = f"https://www.pracuj.pl/praca/{kw};kw/{loc};wp?{urlencode(params)}"
 
-        self.logger.info(f"[PracujSpider] ▶️ стартуем с URL: {url}")
-
+        self.logger.info(f"[PracujSpider] ▶️ starting with URL: {url}")
         yield Request(url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
-    def parse_list(self, response):
-
-        self.logger.debug(f"[PracujSpider] получен ответ: {response.status} — {response.url}")
+    async def parse_list(self, response: scrapy.http.Response):
+        self.logger.debug(f"[PracujSpider] received response: {response.status} — {response.url}")
 
         if response.status != 200:
-
-            self.logger.error(f"[PracujSpider] Ожидал 200, но получил {response.status}")
-
+            self.logger.error(f"[PracujSpider] expected 200 but got {response.status}")
             return
 
-        nodes = response.css('a[data-test="link-offer"]')
+        hrefs: list[str] = response.css('a[data-test="link-offer"]::attr(href)').getall()
+        self.logger.info(f"[PracujSpider] 👉 found offers: {len(hrefs)}")
 
-        self.logger.info(f"[PracujSpider] 👉 найдено офферов: {len(nodes)}")
-
-        if not nodes:
-
-            self.logger.warning(f"[PracujSpider] ❌ ничего не найдено на {response.url}")
-
+        if not hrefs:
+            self.logger.warning(f"[PracujSpider] ❌ no offers found on {response.url}")
             return
 
-        for nd in nodes:
-            href = nd.attrib.get("href")
-            if href:
-                yield response.follow(href, callback=self.parse_job, errback=self._err)
+        for href in hrefs:
+            yield response.follow(href, callback=self.parse_job, errback=self._err)
 
         self.page += 1
         kw = quote(self.keyword)
@@ -57,37 +59,36 @@ class PracujSpider(Spider):
         params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
         next_url = f"https://www.pracuj.pl/praca/{kw};kw/{loc};wp?{urlencode(params)}"
 
-        self.logger.info(f"[PracujSpider] ▶️ следующая страница: {next_url}")
-
+        self.logger.info(f"[PracujSpider] ▶️ next page: {next_url}")
         yield Request(next_url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
-    def parse_job(self, response):
+    async def parse_job(self, response: scrapy.http.Response):
         self.logger.info(f"[PracujSpider] ✏️ JOB {response.status} — {response.url}")
         item = JobListingItem()
+
         item["url"] = response.url
         item["title"] = response.css(
             "#offer-header > div.cy9wb15 > div > div.oheatec > h1::text"
-        ).get(default="").strip()
+        ).get(default="NA").strip()
         item["company"] = response.css(
             "#offer-header > div.cy9wb15 > div > div.oheatec > h2::text"
-        ).get(default="").strip()
-        company_logo = response.css(
+        ).get(default="NA").strip()
+        item["company_logo_url"] = response.css(
             "#offer-header > div.cy9wb15 > div.cmqurxq > div.l1d9j6zz > picture > img::attr(src)"
-        ).get(default="").strip()
-        item["company_logo_url"] = company_logo.strip() if company_logo else "https://i1.sndcdn.com/artworks-tZ7aDyK7PbbMpcf0-z7o8vg-t1080x1080.jpg"
-        location = response.css(
+        ).get(
+            default="https://img.freepik.com/premium-vector/no-photo-available-vector-icon-default-image-symbol-picture-coming-soon-web-site-mobile-app_87543-18055.jpg"
+        ).strip()
+        item["location"] = response.css(
             "#offer-header > ul.caor1s3 > li:nth-child(1) > div.tchzayo > div.t1g3wgsd > a::text"
-        ).get(default="").strip()
-        item["location"] = location.strip() if location else self.location
-        salary = response.css(
+        ).get(default=self.location).strip()
+        item["salary"] = response.css(
             "#offer-header > div.cy9wb15 > div.c1prh5n1 > div > div > div > div.s1n75vtn::text"
-        ).get()
-        item["salary"] = salary.strip() if salary and salary.strip() else "NA"
-        schedule = response.css(
+        ).get(default="NA").strip()
+        item["job_schedule"] = response.css(
             "#offer-header > ul.caor1s3 > li.fillNth.lowercase.c196gesj > div.tchzayo > div::text"
-        ).get()
-        item["job_schedule"] = schedule.strip() if schedule and schedule.strip() else "NA"
+        ).get(default="NA").strip()
+
         yield item
 
-    def _err(self, failure):
-        logging.error(f"[PracujSpider] ❗ Ошибка запроса: {failure}")
+    async def _err(self, failure):
+        logging.error(f"[PracujSpider] ❗ Request failed: {failure}")
