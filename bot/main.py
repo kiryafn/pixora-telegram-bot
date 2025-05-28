@@ -24,7 +24,7 @@ def start_bot():
         logging.basicConfig(level=logging.INFO)
         await create_db()
 
-        asyncio.create_task(scheduler_loop())
+        #asyncio.create_task(scheduler_loop())
 
         bot = create_bot()
         dp = create_dispatcher()
