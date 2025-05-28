@@ -1,4 +1,3 @@
-
 import logging
 import asyncio
 from queue import Queue
@@ -6,11 +5,12 @@ from threading import Thread
 
 from bot.configuration.dispatcher import create_dispatcher
 from bot.core import logger
-from bot.configuration import create_db
-from bot.configuration import create_bot
+from bot.configuration import create_db, create_bot
 from bot.core.notification_loop import notify_users_about_new_jobs
+from bot.core.scraping_loop import periodic_crawl
 from bot.middlewares import LoggingMiddleware
 from bot.ui.log_window import LogWindow, TkinterLogHandler
+
 
 log_queue = Queue()
 tk_handler = TkinterLogHandler(log_queue)
@@ -22,6 +22,8 @@ def start_bot():
     async def bot_main():
         logging.basicConfig(level=logging.INFO)
         await create_db()
+
+        periodic_crawl()
 
         bot = create_bot()
         dp = create_dispatcher()
@@ -39,5 +41,6 @@ def start_bot():
     asyncio.run(bot_main())
 
 if __name__ == "__main__":
+    # run the bot in a thread, UI in main thread
     Thread(target=start_bot, daemon=False).start()
     log_ui.run()

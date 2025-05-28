@@ -1,22 +1,33 @@
 import logging
 from urllib.parse import quote, urlencode
 
-from scrapy import Spider, Request
+import scrapy
+from scrapy import Request, Spider
 from bot.scrapers.items.job_listing_item import JobListingItem
+
 
 class PracujSpider(Spider):
     name = "pracuj"
     allowed_domains = ["pracuj.pl"]
 
-    def __init__(self, preference_id: int, position: str, company: str, location: str, min_salary: int, *args, **kwargs):
+    def __init__(
+        self,
+        preference_id: int,
+        position: str,
+        company: str,
+        location: str,
+        min_salary: int,
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.preference_id = int(preference_id)
-        self.keyword = f"{company} {position}"
+        self.keyword = " ".join(filter(None, [company, position]))
         self.location = location
         self.min_salary = int(min_salary)
         self.page = 1
 
-    def start_requests(self):
+    async def start(self):
         kw = quote(self.keyword)
         loc = quote(self.location)
         params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
@@ -25,24 +36,22 @@ class PracujSpider(Spider):
         self.logger.info(f"[PracujSpider] ▶️ starting with URL: {url}")
         yield Request(url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
-    def parse_list(self, response):
+    async def parse_list(self, response: scrapy.http.Response):
         self.logger.debug(f"[PracujSpider] received response: {response.status} — {response.url}")
 
         if response.status != 200:
             self.logger.error(f"[PracujSpider] expected 200 but got {response.status}")
             return
 
-        nodes = response.css('a[data-test="link-offer"]')
-        self.logger.info(f"[PracujSpider] 👉 found offers: {len(nodes)}")
+        hrefs: list[str] = response.css('a[data-test="link-offer"]::attr(href)').getall()
+        self.logger.info(f"[PracujSpider] 👉 found offers: {len(hrefs)}")
 
-        if not nodes:
+        if not hrefs:
             self.logger.warning(f"[PracujSpider] ❌ no offers found on {response.url}")
             return
 
-        for nd in nodes:
-            href = nd.attrib.get("href")
-            if href:
-                yield response.follow(href, callback=self.parse_job, errback=self._err)
+        for href in hrefs:
+            yield response.follow(href, callback=self.parse_job, errback=self._err)
 
         self.page += 1
         kw = quote(self.keyword)
@@ -53,9 +62,10 @@ class PracujSpider(Spider):
         self.logger.info(f"[PracujSpider] ▶️ next page: {next_url}")
         yield Request(next_url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
-    def parse_job(self, response):
+    async def parse_job(self, response: scrapy.http.Response):
         self.logger.info(f"[PracujSpider] ✏️ JOB {response.status} — {response.url}")
         item = JobListingItem()
+
         item["url"] = response.url
         item["title"] = response.css(
             "#offer-header > div.cy9wb15 > div > div.oheatec > h1::text"
@@ -77,7 +87,8 @@ class PracujSpider(Spider):
         item["job_schedule"] = response.css(
             "#offer-header > ul.caor1s3 > li.fillNth.lowercase.c196gesj > div.tchzayo > div::text"
         ).get(default="NA").strip()
+
         yield item
 
-    def _err(self, failure):
+    async def _err(self, failure):
         logging.error(f"[PracujSpider] ❗ Request failed: {failure}")
