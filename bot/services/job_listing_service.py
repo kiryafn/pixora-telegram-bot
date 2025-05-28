@@ -26,13 +26,5 @@ class JobListingService(BaseService[JobListing]):
     async def get_all_by_preference_id(self, preference_id: int) -> Sequence[JobListing]:
         return await self.repository.get_all_by_preference_id(preference_id)
 
-    """
-    async def mark_all_not_seen(self, preference_id: int) -> None:
-        await self.repository.mark_all_not_seen(preference_id)
-
-    async def expire_not_seen(self, preference_id: int, marker: str) -> None:
-        await self.repository.expire_not_seen(preference_id, marker)
-    """
-
 
 job_listing_service = JobListingService(job_listing_repository, job_preference_repository)
