@@ -1,3 +1,5 @@
+import html
+
 from aiogram import Bot
 from bot.models import User
 from bot.models import JobListing
@@ -9,17 +11,19 @@ class NotificationService:
     async def notify_job_listing(self, bot: Bot, job: JobListing, user: User):
         lines: list[str] = []
 
-        lines.append(f"*{job.job_title}*")
+        lines.append(f"<b>{html.escape(job.job_title)}</b>")
         lines.append("")
 
         fields = {
-            _("salary", lang=user.language):   job.salary,
+            _("salary", lang=user.language): job.salary,
             _("location", lang=user.language): job.location,
-            _("company", lang=user.language):  job.company_name
+            _("company", lang=user.language): job.company_name
         }
 
         for label, value in fields.items():
-            lines.append(f"*{label}*: {value}")
+            lines.append(
+                f"<b>{html.escape(label)}</b>: {html.escape(str(value))}"
+            )
 
         text = "\n".join(lines)
 
@@ -28,7 +32,6 @@ class NotificationService:
             chat_id=user.id,
             caption=text,
             photo=job.company_logo_url,
-            parse_mode="Markdown",
             reply_markup=get_link_keyboard(lang=user.language, url=job.job_url)
         )
 

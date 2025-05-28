@@ -25,4 +25,9 @@ async def notify_users_about_new_jobs(bot: Bot) -> None:
                 await notification_service.notify_job_listing(bot, vacancy, user)
                 lp.is_seen = True
                 await listing_preference_service.save(lp)
-                await asyncio.sleep(2 * 60)
+                await asyncio.sleep(2)
+
+async def main_notify_loop(bot: Bot) -> None:
+    while True:
+        await notify_users_about_new_jobs(bot)
+        await asyncio.sleep(10)
