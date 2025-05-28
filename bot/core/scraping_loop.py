@@ -12,7 +12,6 @@ from bot.services.job_preference_service import job_preference_service
 from bot.scrapers import settings as project_settings
 from bot.scrapers.spiders import PracujSpider
 
-# patch Twisted → asyncio
 asyncioreactor.install()
 configure_logging()
 
@@ -48,9 +47,8 @@ async def _crawl_all_preferences() -> None:
 
 async def scheduler_loop() -> None:
     while True:
-        now = datetime.utcnow()
-        # schedule at :30 every hour
-        next_run = now.replace(minute=30, second=0, microsecond=0)
+        now = datetime.now()
+        next_run = now.replace(minute=50, second=0, microsecond=0)
         if next_run <= now:
             next_run += timedelta(hours=1)
         wait = (next_run - now).total_seconds()

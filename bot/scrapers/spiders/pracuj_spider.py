@@ -22,7 +22,7 @@ class PracujSpider(Spider):
     ):
         super().__init__(*args, **kwargs)
         self.preference_id = int(preference_id)
-        self.keyword = " ".join(filter(None, [company, position]))
+        self.keyword = f"{company} {position}"
         self.location = location
         self.min_salary = int(min_salary)
         self.page = 1
