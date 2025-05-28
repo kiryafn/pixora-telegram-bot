@@ -17,6 +17,14 @@ router: Router = Router()
 
 @router.message(Command("viewprefs"))
 async def view_preferences_handler(message: Message, state: FSMContext) -> None:
+    """
+    Handle the /viewprefs command:
+    - Retrieve the user's language and job preference.
+    - If no preference exists, try sending a placeholder image or fallback text.
+    - If a preference exists, format and send a summary with an inline confirmation keyboard.
+    - Transition FSM to the confirming state.
+    """
+
     lang = await user_service.get_user_lang(message.from_user.id)
     preference : JobPreference = await job_preference_service.get_preference_by_user_id(message.from_user.id)
 
@@ -52,10 +60,22 @@ _VIEW_PREFS_BUTTONS = {
 
 @router.message(F.text.in_(_VIEW_PREFS_BUTTONS))
 async def prefs_via_button_handler(message: Message, state: FSMContext) -> None:
+    """
+    Redirect button presses matching 'View Preferences' to the /viewprefs handler.
+    """
+
     await view_preferences_handler(message, state)
 
 @router.callback_query(EditPreferenceStates.confirming, F.data == "confirm:edit")
 async def process_edit(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle the 'Edit' confirmation:
+    - Acknowledge the callback.
+    - Remove inline keyboard.
+    - Clear FSM state.
+    - Start the set preferences dialog.
+    """
+
     await callback.answer()
     await callback.message.edit_reply_markup(None)
     await state.clear()
@@ -63,6 +83,13 @@ async def process_edit(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(EditPreferenceStates.confirming, F.data == "confirm:okay")
 async def process_okay(callback: CallbackQuery):
+    """
+    Handle the 'Okay' confirmation:
+    - Acknowledge the callback.
+    - Remove inline keyboard.
+    - Send a final acknowledgment message.
+    """
+
     lang = await user_service.get_user_lang(callback.message.chat.id)
     await callback.answer()
     await callback.message.edit_reply_markup(None)

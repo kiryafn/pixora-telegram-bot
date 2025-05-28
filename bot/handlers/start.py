@@ -11,6 +11,11 @@ router: Router = Router()
 
 @router.message(Command("start"))
 async def start_handler(message: Message) -> None:
+    """
+    Handle /start: create the user in the database if new,
+    then send a localized welcome message with the main keyboard.
+    """
+
     user: User = await user_service.get_by_id(message.from_user.id)
 
     if user is None:

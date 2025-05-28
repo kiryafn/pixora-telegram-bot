@@ -19,6 +19,11 @@ router = Router()
 
 @router.message(Command("setprefs"))
 async def set_prefs_command(message: Message, state: FSMContext):
+    """
+    Handle /setprefs command.
+    Prompts the user to choose a country and sets the FSM state to waiting_for_country.
+    """
+
     lang = await user_service.get_user_lang(message.chat.id)
     await state.clear()
 
@@ -35,11 +40,21 @@ _SET_PREFS_BUTTONS = {
 
 @router.message(F.text.in_(_SET_PREFS_BUTTONS))
 async def prefs_via_button_handler(message: Message, state: FSMContext) -> None:
+    """
+    Redirects button-based "Set Preferences" requests to the same command handler.
+    """
+
     await set_prefs_command(message, state)
 
 
 @router.callback_query(SetPreferenceStates.waiting_for_country, F.data.startswith("country:"))
 async def country_chosen(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle country selection callback.
+    Saves the chosen country in FSM data, updates the message,
+    and prompts the user to choose a city.
+    """
+
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
 
@@ -65,6 +80,11 @@ async def country_chosen(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(SetPreferenceStates.waiting_for_city, F.data.startswith("page:"))
 async def paginate_cities(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle pagination buttons for city list.
+    Updates inline keyboard to show the requested page of cities.
+    """
+
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
 
@@ -79,6 +99,12 @@ async def paginate_cities(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(SetPreferenceStates.waiting_for_city, F.data.startswith("city:"))
 async def city_chosen(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle city selection callback.
+    Saves the chosen city in FSM data, updates the message,
+    and prompts the user to enter a job title.
+    """
+
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
 
@@ -97,6 +123,11 @@ async def city_chosen(callback: CallbackQuery, state: FSMContext):
 
 @router.message(SetPreferenceStates.waiting_for_title)
 async def title_chosen(message: Message, state: FSMContext):
+    """
+    Handle job title input.
+    Saves the entered title in FSM data and prompts the user to choose or enter a company.
+    """
+
     lang = await user_service.get_user_lang(message.from_user.id)
     await state.update_data(title=message.text)
     # Отправляем inline-клавиатуру с кнопкой "Any company"
@@ -107,15 +138,20 @@ async def title_chosen(message: Message, state: FSMContext):
     await state.set_state(SetPreferenceStates.waiting_for_company)
 
 
-# Новый хэндлер для кнопки "Any company"
 @router.callback_query(SetPreferenceStates.waiting_for_company, F.data == "company:any")
 async def any_company_chosen(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle "Any company" selection.
+    Records a null company preference, updates the message,
+    and prompts the user to enter minimum salary.
+    """
+
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
-    # Сохраняем company = NULL
+
     await state.update_data(company=None, company_name=_("any", lang=lang))
     data = await state.get_data()
-    # Убираем inline-клавиатуру
+
     await callback.message.edit_text(text=_("selected_any_company", lang=lang).format(any=data["company_name"]), reply_markup=None)
     await callback.message.answer(_("enter_min_salary", lang=lang))
     await state.set_state(SetPreferenceStates.waiting_for_min_salary)
@@ -123,7 +159,11 @@ async def any_company_chosen(callback: CallbackQuery, state: FSMContext):
 
 @router.message(SetPreferenceStates.waiting_for_company)
 async def company_chosen(message: Message, state: FSMContext):
-    # Этот хэндлер срабатывает, если пользователь вводит текст вручную
+    """
+    Handle manual company name input.
+    Saves the entered company name and prompts the user to enter minimum salary.
+    """
+
     lang = await user_service.get_user_lang(message.from_user.id)
     await state.update_data(company=message.text, company_name=message.text)
     await message.answer(_("enter_min_salary", lang=lang))
@@ -133,6 +173,12 @@ async def company_chosen(message: Message, state: FSMContext):
 
 @router.message(SetPreferenceStates.waiting_for_min_salary)
 async def min_sal_chosen(message: Message, state: FSMContext):
+    """
+    Handle minimum salary input.
+    Validates numeric input, saves it in FSM data,
+    then shows a summary and asks for confirmation.
+    """
+
     lang = await user_service.get_user_lang(message.from_user.id)
 
     if not message.text.isdigit():
@@ -160,6 +206,12 @@ async def min_sal_chosen(message: Message, state: FSMContext):
 
 @router.callback_query(SetPreferenceStates.confirming, F.data == "confirm:yes")
 async def process_save(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle confirmation to save preferences.
+    Inserts or updates the JobPreference record in the database,
+    then notifies the user of success.
+    """
+
     await callback.answer()
     user = await user_service.get_by_id(callback.from_user.id)
     lang = user.language
@@ -195,6 +247,11 @@ async def process_save(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(SetPreferenceStates.confirming, F.data == "confirm:no")
 async def process_cancel(callback: CallbackQuery, state: FSMContext):
+    """
+    Handle cancellation of preference setup.
+    Clears the FSM state and notifies the user that the operation was cancelled.
+    """
+
     await callback.answer()
     lang = await user_service.get_user_lang(callback.from_user.id)
 

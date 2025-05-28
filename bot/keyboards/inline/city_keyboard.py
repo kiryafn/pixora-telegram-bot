@@ -2,6 +2,17 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 def get_city_keyboard(cities: list, page: int = 1) -> InlineKeyboardMarkup:
+    """
+    Generate a paginated inline keyboard of cities.
+
+    Args:
+        cities (list): Sequence of city objects (with 'name' and 'id').
+        page (int): 1-based page index to display.
+
+    Returns:
+        InlineKeyboardMarkup: Keyboard with up to 9 city buttons and navigation arrows.
+    """
+
     ITEMS_PER_PAGE = 9
     total_pages = (len(cities) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
 

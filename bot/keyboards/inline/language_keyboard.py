@@ -2,6 +2,13 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.callbacks import LanguageCallback
 
 def get_language_keyboard() -> InlineKeyboardMarkup:
+    """
+    Create an inline keyboard for selecting the user language.
+
+    Returns:
+        InlineKeyboardMarkup: Keyboard with buttons for each supported language.
+    """
+
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="🇬🇧 English", callback_data=LanguageCallback(code="en").pack()),
