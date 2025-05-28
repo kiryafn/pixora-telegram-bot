@@ -8,6 +8,25 @@ from bot.models.listing_preference import ListingPreference
 
 
 class JobPreference(Base):
+    """
+    Represents a user's job preference configuration.
+
+    Used to define criteria that a user is looking for in job listings,
+    such as preferred job title, company, minimum salary, and location.
+
+    Attributes:
+        id (int): Unique identifier for the job preference.
+        title (str): Desired job title or position.
+        company (str | None): Preferred company name (optional).
+        min_salary (float): Minimum acceptable salary.
+        city_id (int): Foreign key referencing the preferred city.
+        user_id (int): Foreign key referencing the user.
+        city (City): The city associated with this job preference.
+        user (User): The user who owns this job preference.
+        listing_preferences (list[ListingPreference]): Join table linking to matching job listings.
+        job_listings (list[JobListing]): Job listings matched to this preference via `listing_preferences`.
+    """
+
     __tablename__ = "job_preferences"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)

@@ -7,6 +7,17 @@ from bot.models import Base
 
 
 class City(Base):
+    """
+    Represents a city entity in the database.
+
+    Attributes:
+        id (int): Unique identifier for the city.
+        name (str): Name of the city.
+        country_id (int): Foreign key referencing the associated country.
+        country (Country): The country this city belongs to.
+        job_preferences (list[JobPreference]): Job preferences associated with this city.
+    """
+
     __tablename__ = 'cities'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)

@@ -5,7 +5,32 @@ from bot.core import logger
 
 
 class JobListingServicePipeline:
+    """
+    Scrapy pipeline that processes and stores job listing items.
+
+    - Checks if a job listing with the same URL already exists.
+    - If it does, links it to a job preference.
+    - If not, creates and saves the job listing, then links it.
+
+    Attributes:
+        None
+    """
+
     async def process_item(self, item, spider):
+        """
+        Processes a Scrapy item representing a job listing.
+
+        1. Checks for existing job listing by URL.
+        2. If found, links it to the current spider's job preference.
+        3. If not found, saves the new job listing and links it.
+
+        Args:
+            item (dict): The scraped item from the spider.
+            spider: The spider instance that scraped the item. Must have `preference_id`.
+
+        Returns:
+            dict: The original item, unchanged.
+        """
         url = item.get("url")
 
         try:
