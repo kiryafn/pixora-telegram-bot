@@ -8,7 +8,8 @@ from bot.configuration.dispatcher import create_dispatcher
 from bot.core import logger
 from bot.configuration import create_db
 from bot.configuration import create_bot
-from bot.core.notification_loop import notify_users_about_new_jobs, main_notify_loop
+from bot.core.notification_loop import main_notify_loop
+from bot.core.scraping_loop import scheduler_loop
 from bot.middlewares import LoggingMiddleware
 from bot.ui.log_window import LogWindow, TkinterLogHandler
 
@@ -22,6 +23,8 @@ def start_bot():
     async def bot_main():
         logging.basicConfig(level=logging.INFO)
         await create_db()
+
+        asyncio.create_task(scheduler_loop())
 
         bot = create_bot()
         dp = create_dispatcher()

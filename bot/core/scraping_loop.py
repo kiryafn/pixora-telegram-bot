@@ -62,9 +62,3 @@ async def scheduler_loop() -> None:
             await _crawl_all_preferences()
         except Exception:
             _log.exception("❌ Unhandled error during scheduled crawl")
-
-
-def periodic_crawl() -> None:
-    """Start the background scheduler on the existing event loop."""
-    asyncio.create_task(scheduler_loop())
-    _log.info("✅ AsyncIO-based scraper scheduler started")
