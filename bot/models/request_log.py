@@ -8,6 +8,20 @@ from bot.models import Base
 
 
 class RequestLog(Base):
+    """
+    Represents a log entry for a user's request to the system.
+
+    This model stores timing information about how long a specific user's request took to process.
+    Useful for performance monitoring and auditing.
+
+    Attributes:
+        id (int): Unique identifier for the request log entry.
+        request_time (datetime): Timestamp when the request was made. Defaults to the current time.
+        response_time (float): Duration of the response time in seconds.
+        user_id (int): Foreign key referencing the user who made the request.
+        user (User): The user associated with the request.
+    """
+
     __tablename__ = "request_logs"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)

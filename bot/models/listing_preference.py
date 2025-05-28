@@ -4,7 +4,27 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from bot.models import Base
 
+
 class ListingPreference(Base):
+    """
+    Association table linking job listings to job preferences.
+
+    This table represents a many-to-many relationship between job listings and job preferences.
+    Each row tracks whether a specific job listing has been matched to a given user preference
+    and whether the user has seen the job listing.
+
+    Attributes:
+        id (int): Unique identifier for the listing-preference link.
+        job_listing_id (int): Foreign key referencing the related job listing.
+        job_preference_id (int): Foreign key referencing the related job preference.
+        is_seen (bool): Indicates whether the listing has already been shown to the user.
+        job_listing (JobListing): The associated job listing.
+        job_preference (JobPreference): The associated job preference.
+
+    Constraints:
+        Unique constraint on (job_listing_id, job_preference_id) to avoid duplicates.
+    """
+
     __tablename__ = "listing_preferences"
     __table_args__ = (
         UniqueConstraint(

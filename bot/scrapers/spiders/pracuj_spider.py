@@ -7,6 +7,20 @@ from bot.scrapers.items.job_listing_item import JobListingItem
 
 
 class PracujSpider(Spider):
+    """
+    Scrapy spider for crawling job listings from pracuj.pl.
+
+    The spider starts with a specific job keyword and location, navigates
+    through paginated search results, and scrapes details from each job offer.
+
+    Attributes:
+        preference_id (int): ID of the job preference used for linking results.
+        keyword (str): Combined search keyword (position + company).
+        location (str): The city or region to filter job offers.
+        min_salary (int): Minimum salary filter for job listings.
+        page (int): Current page number in pagination.
+    """
+
     name = "pracuj"
     allowed_domains = ["pracuj.pl"]
 
@@ -20,6 +34,16 @@ class PracujSpider(Spider):
         *args,
         **kwargs,
     ):
+        """
+        Initializes the spider with user-defined search preferences.
+
+        Args:
+            preference_id (int): The ID used to link found jobs to preferences.
+            position (str): Desired job position.
+            company (str): Target company name.
+            location (str): Location filter for jobs.
+            min_salary (int): Minimum salary for filtering results.
+        """
         super().__init__(*args, **kwargs)
         self.preference_id = int(preference_id)
         self.keyword = f"{company} {position}"
@@ -28,6 +52,9 @@ class PracujSpider(Spider):
         self.page = 1
 
     async def start(self):
+        """
+        Starts the spider by requesting the first page of job listings.
+        """
         kw = quote(self.keyword)
         loc = quote(self.location)
         params = {"rd": 0, "sal": self.min_salary, "pn": self.page}
@@ -37,6 +64,12 @@ class PracujSpider(Spider):
         yield Request(url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
     async def parse_list(self, response: scrapy.http.Response):
+        """
+        Parses a listing page and schedules job offer requests.
+
+        Args:
+            response (scrapy.http.Response): The response from the listing page.
+        """
         self.logger.debug(f"[PracujSpider] received response: {response.status} — {response.url}")
 
         if response.status != 200:
@@ -63,6 +96,12 @@ class PracujSpider(Spider):
         yield Request(next_url, callback=self.parse_list, errback=self._err, dont_filter=True)
 
     async def parse_job(self, response: scrapy.http.Response):
+        """
+        Parses an individual job offer page and extracts job details.
+
+        Args:
+            response (scrapy.http.Response): The response from the job detail page.
+        """
         self.logger.info(f"[PracujSpider] ✏️ JOB {response.status} — {response.url}")
         item = JobListingItem()
 
@@ -91,4 +130,10 @@ class PracujSpider(Spider):
         yield item
 
     async def _err(self, failure):
+        """
+        Error handler for failed requests.
+
+        Args:
+            failure: The request failure object.
+        """
         logging.error(f"[PracujSpider] ❗ Request failed: {failure}")
